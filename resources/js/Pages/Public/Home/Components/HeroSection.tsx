@@ -1,8 +1,8 @@
-import { ArrowRight } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import React from 'react';
+import { Button } from "@/Components/ui/button"
 import { Link } from '@inertiajs/react';
-
-export default function HeroSection() {
+import { ArrowRight } from 'lucide-react';
+function HeroSection(props) {
     return (
         <section className="relative w-full py-12 md:py-24 lg:py-32 overflow-hidden bg-muted">
             <div className="container px-4 md:px-6 relative z-10">
@@ -13,7 +13,8 @@ export default function HeroSection() {
                                 Premium Audio Equipment for Professionals
                             </h1>
                             <p className="max-w-[600px] text-muted-foreground md:text-xl">
-                                Discover our collection of high-quality speakers, cabinets, amplifiers, and accessories designed for
+                                Discover our collection of high-quality speakers, cabinets, amplifiers, and accessories
+                                designed for
                                 musicians, sound engineers, and audio enthusiasts.
                             </p>
                         </div>
@@ -30,15 +31,16 @@ export default function HeroSection() {
                         </div>
                     </div>
                     <div className="relative h-[300px] md:h-[400px] lg:h-full">
-                        <image
-                            // src="/placeholder.svg?height=800&width=1200"
+                        <img
+                            src="https://plus.unsplash.com/premium_photo-1681400648913-ed4da66955dd?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTN8fHNwZWFrZXJ8ZW58MHx8MHx8fDA%3D"
                             alt="Premium audio equipment"
-                            fill
                             className="object-cover rounded-lg"
                         />
                     </div>
                 </div>
             </div>
         </section>
-    )
+    );
 }
+
+export default HeroSection;

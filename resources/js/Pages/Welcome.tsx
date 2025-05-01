@@ -1,6 +1,5 @@
 import { PageProps } from '@/types';
 import { Head, Link } from '@inertiajs/react';
-import HeroSection from '@/Components/HeroSection';
 
 export default function Welcome({
     auth,
@@ -71,7 +70,6 @@ export default function Welcome({
                         </header>
 
                         <main className="flex flex-col min-h-screen">
-                            <HeroSection />
                         </main>
 
                         <footer className="py-16 text-center text-sm text-black dark:text-white/70">
