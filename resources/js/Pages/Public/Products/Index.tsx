@@ -66,9 +66,9 @@ export default function CategoryPage({ params, searchParams }: CategoryPageProps
                     <ProductSort />
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-8">
+                <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-8 items-start">
                     <FilterSidebar  category={"speakers"}/>
-                    <ProductGrid />
+                    <ProductGrid  products={products}/>
                 </div>
             </main>
         </Guest>

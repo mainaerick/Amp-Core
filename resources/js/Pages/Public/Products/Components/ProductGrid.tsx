@@ -1,9 +1,9 @@
-import Link from "next/link"
-import Image from "next/image"
+
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
+import { Link } from '@inertiajs/react';
 
 interface Product {
     id: number
@@ -33,9 +33,9 @@ export default function ProductGrid({ products }: ProductGridProps) {
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
             {products.map((product) => (
                 <Card key={product.id} className="overflow-hidden">
-                    <div className="relative h-48 w-full">
-                        <Image
-                            src={product.image || "/placeholder.svg"}
+                    <div className="relative h-52 w-full">
+                        <img
+                            src={"https://plus.unsplash.com/premium_photo-1681400648913-ed4da66955dd?auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8d29vZmVyfGVufDB8fDB8fHww" || "/placeholder.svg"}
                             alt={product.name}
                             fill
                             className="object-cover transition-transform hover:scale-105"
