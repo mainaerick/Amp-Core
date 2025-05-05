@@ -30,11 +30,11 @@ const products: Product[] = [
             "Professional-grade 500W speaker with exceptional clarity and powerful bass response. Perfect for live performances and large venues. The Pro Series 500W Speaker delivers crystal-clear sound across the entire frequency spectrum, with particular attention to vocal clarity and mid-range definition. Its robust construction ensures durability for touring and regular use, while the lightweight design makes transportation easy. The speaker features advanced thermal management to prevent overheating during extended use, and the proprietary waveguide design ensures even sound distribution throughout the venue.",
         price: 599,
         images: [
-            "/placeholder.svg?height=600&width=600",
-            "/placeholder.svg?height=600&width=600",
-            "/placeholder.svg?height=600&width=600",
-            "/placeholder.svg?height=600&width=600",
-        ],
+            "data:/image",
+            "data:/image","data:/image",
+
+
+            ],
         specs: [
             { name: "Power", value: "500W" },
             { name: "Frequency Response", value: "45Hz - 20kHz" },

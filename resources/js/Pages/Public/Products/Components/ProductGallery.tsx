@@ -38,7 +38,7 @@ export default function ProductGallery({ images }: ProductGalleryProps) {
                 <img
                     src={mainImage || "/placeholder.svg"}
                     alt="Product image"
-
+                    style={{height:600,width:600}}
                     className="object-cover transition-transform group-hover:scale-105"
 
                 />
