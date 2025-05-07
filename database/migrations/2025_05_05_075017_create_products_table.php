@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('slug')->unique();
-            $table->string('category');
+            $table->string('category_id');
             $table->string('short_description');
             $table->text('description');
             $table->decimal('price', 10, 2)->nullable();
@@ -25,6 +25,11 @@ return new class extends Migration
             $table->string('demo_video')->nullable();
             $table->boolean('is_new')->default(false);
             $table->timestamps();
+
+            $table->foreign('category_id')
+                ->references('id')
+                ->on('categories')
+                ->onDelete('cascade');
         });
     }
 

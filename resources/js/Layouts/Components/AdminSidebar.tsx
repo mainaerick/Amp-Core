@@ -1,6 +1,7 @@
 "use client"
 
-import { BarChart, ShoppingBag, Users, Package, Settings, Layers, Home, LogOut } from "lucide-react"
+import { BarChart, Package, Settings, Layers, Home, LogOut, MapPin, MessageSquare } from "lucide-react"
+
 
 import {
     Sidebar,
@@ -16,7 +17,7 @@ import {
 import { Link } from '@inertiajs/react';
 
 export function AdminSidebar() {
-    const pathname = "admin/products"
+    const pathname = ""
 
     const isActive = (path: string) => {
         return pathname === path || pathname?.startsWith(`${path}/`)
@@ -58,18 +59,18 @@ export function AdminSidebar() {
                         </SidebarMenuButton>
                     </SidebarMenuItem>
                     <SidebarMenuItem>
-                        <SidebarMenuButton asChild isActive={isActive("/admin/orders")}>
-                            <Link href="/admin/orders">
-                                <ShoppingBag className="h-4 w-4" />
-                                <span>Orders</span>
+                        <SidebarMenuButton asChild isActive={isActive("/admin/dealers")}>
+                            <Link href="/admin/dealers">
+                                <MapPin className="h-4 w-4" />
+                                <span>Dealers</span>
                             </Link>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
                     <SidebarMenuItem>
-                        <SidebarMenuButton asChild isActive={isActive("/admin/customers")}>
-                            <Link href="/admin/customers">
-                                <Users className="h-4 w-4" />
-                                <span>Customers</span>
+                        <SidebarMenuButton asChild isActive={isActive("/admin/inquiries")}>
+                            <Link href="/admin/inquiries">
+                                <MessageSquare className="h-4 w-4" />
+                                <span>Inquiries</span>
                             </Link>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
