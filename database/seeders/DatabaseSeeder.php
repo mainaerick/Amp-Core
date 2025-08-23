@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Category;
 use App\Models\Dealer;
 use App\Models\Product;
+use App\Models\Setting;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -38,6 +39,17 @@ class DatabaseSeeder extends Seeder
         ]);
         Dealer::factory(5)->create();
         Product::factory()->count(20)->create();
+        Setting::setSection('general', [
+            'storeName' => 'SoundWave Audio',
+            'storeUrl' => 'https://soundwaveaudio.com',
+            'currency' => 'USD',
+        ]);
+
+        Setting::setSection('contact', [
+            'email' => 'support@soundwaveaudio.com',
+            'phone' => '+1 (212) 555-7890',
+            'address' => '123 Main St, New York, NY',
+        ]);
 
     }
 

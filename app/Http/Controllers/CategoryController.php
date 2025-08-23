@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreCategoryRequest;
 use App\Http\Requests\UpdateCategoryRequest;
 use App\Models\Category;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 
 class CategoryController extends Controller
@@ -26,7 +27,9 @@ class CategoryController extends Controller
      */
     public function create()
     {
-        return Inertia::render('Admin/Categories/Create');
+        return Inertia::render('Admin/Categories/Create',[
+            'mode' => 'create',
+        ]);
     }
 
     /**
@@ -34,7 +37,25 @@ class CategoryController extends Controller
      */
     public function store(StoreCategoryRequest $request)
     {
-        //
+        $validated = $request->validate([
+            'name'        => ['required', 'string', 'max:255'],
+            'slug'        => ['nullable', 'string', 'max:255', 'unique:categories,slug'],
+            'description' => ['nullable', 'string'],
+            'status'      => ['required', 'in:active,inactive'],
+        ]);
+
+        // Auto-generate slug if not given
+        if (empty($validated['slug'])) {
+            $validated['slug'] = Str::slug($validated['name']);
+        }
+
+        // Generate ID like CAT-001
+        $validated['id'] = 'CAT-' . str_pad(Category::count() + 1, 3, '0', STR_PAD_LEFT);
+
+        Category::create($validated);
+
+        return redirect()->route('admin.categories.index')
+            ->with('success', 'Category created successfully.');
     }
 
     /**

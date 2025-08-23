@@ -1,7 +1,21 @@
 {
+    "extends": [
+    "eslint:recommended",
+    "plugin:react/recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:prettier/recommended"
+  ],
     "singleQuote": true,
     "plugins": [
         "prettier-plugin-organize-imports",
         "prettier-plugin-tailwindcss"
-    ]
+    ],
+     "rules": {
+    "prettier/prettier": ["error", {
+      "singleQuote": true,
+      "semi": false,
+      "trailingComma": "all"
+    }]
+  }
 }
+

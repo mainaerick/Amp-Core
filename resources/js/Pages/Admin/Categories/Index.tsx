@@ -4,7 +4,9 @@ import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react"
 import { CategoriesTable } from '@/Pages/Admin/Categories/Components/CategoriesTable';
 import AdminLayout from '@/Layouts/AdminLayout';
-function Index(props) {
+
+function Index({ auth, categories }) {
+    console.log(categories)
     return (
         <AdminLayout>
             <div className="flex flex-col gap-6">
@@ -18,7 +20,7 @@ function Index(props) {
                     </Button>
                 </div>
 
-                <CategoriesTable />
+                <CategoriesTable  data={categories}/>
             </div>
         </AdminLayout>
 

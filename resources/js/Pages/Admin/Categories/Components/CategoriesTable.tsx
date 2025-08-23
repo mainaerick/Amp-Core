@@ -89,16 +89,11 @@ const data: Category[] = [
     },
 ]
 
-type Category = {
-    id: string
-    name: string
-    slug: string
-    description: string
-    products: number
-    status: "active" | "inactive"
+interface Props {
+    data:Category[]
 }
 
-export function CategoriesTable() {
+export function CategoriesTable({data}:Props) {
     const [sorting, setSorting] = useState<SortingState>([])
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
     const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
