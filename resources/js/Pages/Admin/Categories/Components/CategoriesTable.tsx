@@ -171,13 +171,57 @@ export function CategoriesTable({data}:Props) {
         if (window.confirm('Are you sure you want to delete this category?')) {
             router.delete(route('admin.categories.destroy', id), {
                 onSuccess: () => {
-                    notification.success({ message: 'Category Deleted', description: 'The employee was successfully deleted.' });
+                    notification.success({ message: 'Category Deleted', description: 'The category was successfully deleted.' });
                 },
             });
         }
     };
+    const selectedIds = table
+        .getSelectedRowModel()
+        .flatRows.map((row) => row.original.id)
+
+    const handleBulkDelete = () => {
+        if (selectedIds.length === 0) return
+        if (window.confirm('Are you sure you want to delete this category?')) {
+            router.post(
+                route("admin.categories.bulkDelete"),
+                { ids: selectedIds },
+                {
+                    preserveScroll: true,
+                    onSuccess: () => {
+                        setRowSelection({})
+                        notification.success({ message: 'Selected Categories Deleted', description: 'The categories was successfully deleted.' });
+                    },
+                }
+            )
+        }
+
+    }
+
+    const handleBulkExport = () => {
+        if (selectedIds.length === 0) return
+        router.post(route("admin.categories.bulkExport"), { ids: selectedIds }, {
+            preserveScroll: true,
+        })
+    }
     return (
         <div className="w-full">
+            {selectedIds.length > 0 && <div className="flex gap-2 mb-4">
+                <Button
+                    variant="destructive"
+                    onClick={handleBulkDelete}
+                    disabled={selectedIds.length === 0}
+                >
+                    Delete Selected
+                </Button>
+                <Button
+                    variant="outline"
+                    onClick={handleBulkExport}
+                    disabled={selectedIds.length === 0}
+                >
+                    Export Selected
+                </Button>
+            </div>}
             <div className="rounded-md border">
                 <Table>
                     <TableHeader>
@@ -198,7 +242,8 @@ export function CategoriesTable({data}:Props) {
                             table.getRowModel().rows.map((row) => (
                                 <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
                                     {row.getVisibleCells().map((cell) => (
-                                        <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
+                                        <TableCell
+                                            key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
                                     ))}
                                 </TableRow>
                             ))
@@ -226,7 +271,8 @@ export function CategoriesTable({data}:Props) {
                     >
                         Previous
                     </Button>
-                    <Button variant="outline" size="sm" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
+                    <Button variant="outline" size="sm" onClick={() => table.nextPage()}
+                            disabled={!table.getCanNextPage()}>
                         Next
                     </Button>
                 </div>

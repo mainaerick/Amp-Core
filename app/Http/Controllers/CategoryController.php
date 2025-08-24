@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreCategoryRequest;
 use App\Http\Requests\UpdateCategoryRequest;
 use App\Models\Category;
+use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 
@@ -112,5 +113,25 @@ class CategoryController extends Controller
 
         return redirect()->route('admin.categories.index')
             ->with('success', 'Category deleted successfully.');
+    }
+    public function bulkDelete(Request $request)
+    {
+        $ids = $request->input('ids', []);
+        Category::whereIn('id', $ids)->delete();
+
+        return back()->with('success', 'Selected categories deleted successfully.');
+    }
+
+    public function bulkExport(Request $request)
+    {
+        $ids = $request->input('ids', []);
+        $categories = Category::whereIn('id', $ids)->get();
+
+        // return JSON for now
+        // For Excel, you could use Laravel Excel package
+        return response()->json([
+            'success' => true,
+            'data' => $categories
+        ]);
     }
 }

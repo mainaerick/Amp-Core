@@ -54,6 +54,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/categories/{id}', [CategoryController::class, 'edit'])->name('categories.edit');
         Route::put('categories/{id}', [CategoryController::class, 'update'])->name('categories.update');
         Route::delete('categories/{id}', [CategoryController::class, 'destroy'])->name('categories.destroy');
+        Route::post('categories/bulk-delete', [CategoryController::class, 'bulkDelete'])->name('categories.bulkDelete');
+        Route::post('categories/bulk-export', [CategoryController::class, 'bulkExport'])->name('categories.bulkExport');
     });
 });
 
