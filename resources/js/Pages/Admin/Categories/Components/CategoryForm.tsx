@@ -38,9 +38,6 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ mode, category }) => {
         form.setFieldsValue(data)
     }, [data, form])
 
-    useEffect(() => {
-        console.log(errors)
-    }, [errors]);
     const onFinish = async () => {
         const routeName = mode === 'create' ? 'admin.categories.store' : 'admin.categories.update'
         const url = mode === 'create' ? route(routeName) : route(routeName, category?.id)

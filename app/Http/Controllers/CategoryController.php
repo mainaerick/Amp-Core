@@ -69,17 +69,37 @@ class CategoryController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Category $category)
+    public function edit( $id)
     {
-        //
+        $category = Category::findOrFail($id);
+
+        return Inertia::render('Admin/Categories/Edit', [
+            'mode' => 'edit',
+            'category' => $category,
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateCategoryRequest $request, Category $category)
+    public function update(UpdateCategoryRequest $request, $id)
     {
-        //
+        $category = Category::findOrFail($id);
+        $validated = $request->validate([
+            'name'        => ['required', 'string', 'max:255'],
+            'slug'        => ['nullable', 'string', 'max:255', 'unique:categories,slug,' . $category->id . ',id'],
+            'description' => ['nullable', 'string'],
+            'status'      => ['required', 'in:active,inactive'],
+        ]);
+
+        if (empty($validated['slug'])) {
+            $validated['slug'] = Str::slug($validated['name']);
+        }
+
+        $category->update($validated);
+
+        return redirect()->route('admin.categories.index')
+            ->with('success', 'Category updated successfully.');
     }
 
     /**
