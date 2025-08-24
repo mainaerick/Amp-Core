@@ -1,93 +1,34 @@
-"use client"
+'use client';
 
-import { useState } from "react"
+import { useState } from 'react';
 import {
     type ColumnDef,
     type ColumnFiltersState,
-    type SortingState,
-    type VisibilityState,
     flexRender,
     getCoreRowModel,
     getFilteredRowModel,
     getPaginationRowModel,
     getSortedRowModel,
+    type SortingState,
     useReactTable,
-} from "@tanstack/react-table"
-import { ArrowUpDown, MoreHorizontal, Edit, Trash } from "lucide-react"
+    type VisibilityState
+} from '@tanstack/react-table';
+import { ArrowUpDown, Edit, MoreHorizontal, Trash } from 'lucide-react';
 
-import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuLabel,
     DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Badge } from "@/components/ui/badge"
-import { Link } from '@inertiajs/react';
-
-// Sample data
-const data: Category[] = [
-    {
-        id: "CAT-1",
-        name: "Speakers",
-        slug: "speakers",
-        description: "High-quality audio speakers for various applications",
-        products: 24,
-        status: "active",
-    },
-    {
-        id: "CAT-2",
-        name: "Subwoofers",
-        slug: "subwoofers",
-        description: "Powerful subwoofers for deep bass reproduction",
-        products: 18,
-        status: "active",
-    },
-    {
-        id: "CAT-3",
-        name: "Amplifiers",
-        slug: "amplifiers",
-        description: "Audio amplifiers for enhanced sound quality",
-        products: 15,
-        status: "active",
-    },
-    {
-        id: "CAT-4",
-        name: "Accessories",
-        slug: "accessories",
-        description: "Audio accessories and components",
-        products: 32,
-        status: "active",
-    },
-    {
-        id: "CAT-5",
-        name: "Car Audio & Video",
-        slug: "car-audio-video",
-        description: "Audio and video solutions for vehicles",
-        products: 27,
-        status: "active",
-    },
-    {
-        id: "CAT-6",
-        name: "Home Theater",
-        slug: "home-theater",
-        description: "Complete home theater systems and components",
-        products: 12,
-        status: "inactive",
-    },
-    {
-        id: "CAT-7",
-        name: "Headphones",
-        slug: "headphones",
-        description: "Premium headphones for immersive audio experience",
-        products: 0,
-        status: "inactive",
-    },
-]
+    DropdownMenuTrigger
+} from '@/components/ui/dropdown-menu';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Badge } from '@/components/ui/badge';
+import { router } from '@inertiajs/react';
+import { notification } from 'antd';
 
 interface Props {
     data:Category[]
@@ -191,15 +132,15 @@ export function CategoriesTable({data}:Props) {
                         <DropdownMenuContent align="end">
                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
                             <DropdownMenuItem asChild>
-                                <Link href={`/admin/categories/${category.id}/edit`}>
+                                <span onClick={() => router.get(route('admin.categories.edit', category.id as string))}>
                                     <Edit className="mr-2 h-4 w-4" />
                                     Edit
-                                </Link>
+                                </span>
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem className="text-destructive">
-                                <Trash className="mr-2 h-4 w-4" />
-                                Delete
+                            <DropdownMenuItem  className="text-destructive" onClick={()=>handleDelete(category.id as string)}>
+                                    <Trash className="mr-2 h-4 w-4" />
+                                    Delete
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
@@ -226,7 +167,15 @@ export function CategoriesTable({data}:Props) {
             rowSelection,
         },
     })
-
+    const handleDelete = (id) => {
+        if (window.confirm('Are you sure you want to delete this category?')) {
+            router.delete(route('admin.categories.destroy', id), {
+                onSuccess: () => {
+                    notification.success({ message: 'Category Deleted', description: 'The employee was successfully deleted.' });
+                },
+            });
+        }
+    };
     return (
         <div className="w-full">
             <div className="rounded-md border">

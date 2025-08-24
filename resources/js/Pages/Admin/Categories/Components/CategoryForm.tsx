@@ -5,13 +5,7 @@ import { generateSlug } from '@/Pages/Admin/Categories/lib/actions';
 
 type CategoryFormProps = {
     mode: 'create' | 'edit'
-    category?: {
-        id: string
-        name: string
-        slug: string
-        description: string
-        status: 'active' | 'inactive'
-    }
+    category?: Category
 }
 
 const { TextArea } = Input
@@ -27,20 +21,20 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ mode, category }) => {
         put,
         processing,
         errors,
-    } = useForm({
+    } = useForm<Category|any>({
         name: category?.name || '',
         slug: category?.slug || '',
         description: category?.description || '',
         status: category?.status || 'active',
     })
 
-    useEffect(() => {
-        form.setFieldsValue(data)
-    }, [data, form])
+    // useEffect(() => {
+    //     form.setFieldsValue(data)
+    // }, [data, form])
 
     const onFinish = async () => {
         const routeName = mode === 'create' ? 'admin.categories.store' : 'admin.categories.update'
-        const url = mode === 'create' ? route(routeName) : route(routeName, category?.id)
+        const url = mode === 'create' ? route(routeName) : route(routeName, category?.id as string)
 
         const method = mode === 'create' ? post : put
 
@@ -75,6 +69,7 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ mode, category }) => {
                 form={form}
                 onFinish={onFinish}
                 initialValues={data}
+
             >
                 <Form.Item
                     label="Name"
@@ -99,7 +94,7 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ mode, category }) => {
                         },
                     ]}
                 >
-                    <Input placeholder="enter-slug-here" />
+                    <Input placeholder="enter-slug-here" onChange={(e) => setData("slug", e.target.value)} />
                 </Form.Item>
 
                 <Form.Item
@@ -108,7 +103,7 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ mode, category }) => {
                     validateStatus={errors.description && 'error'}
                     help={errors.description}
                 >
-                    <TextArea placeholder="Enter category description" rows={4} />
+                    <TextArea placeholder="Enter category description" rows={4} onChange={(e) => setData("description", e.target.value)}/>
                 </Form.Item>
 
                 <Form.Item
@@ -118,7 +113,7 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ mode, category }) => {
                     help={errors.status}
                     rules={[{ required: true, message: 'Please select a status' }]}
                 >
-                    <Select placeholder="Select status">
+                    <Select placeholder="Select status" onChange={(value) => setData("status", value)}>
                         <Select.Option value="active">Active</Select.Option>
                         <Select.Option value="inactive">Inactive</Select.Option>
                     </Select>

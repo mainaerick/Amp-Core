@@ -1,8 +1,8 @@
 type Category = {
-    id: string
+    id?: string
     name: string
     slug: string
     description: string
-    products: number
+    products?: number
     status: "active" | "inactive"
 }
