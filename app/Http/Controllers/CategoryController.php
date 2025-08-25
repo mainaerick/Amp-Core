@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\CategoriesExport;
 use App\Http\Requests\StoreCategoryRequest;
 use App\Http\Requests\UpdateCategoryRequest;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
+use Maatwebsite\Excel\Facades\Excel;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class CategoryController extends Controller
 {
@@ -125,13 +128,6 @@ class CategoryController extends Controller
     public function bulkExport(Request $request)
     {
         $ids = $request->input('ids', []);
-        $categories = Category::whereIn('id', $ids)->get();
-
-        // return JSON for now
-        // For Excel, you could use Laravel Excel package
-        return response()->json([
-            'success' => true,
-            'data' => $categories
-        ]);
+        return Excel::download(new CategoriesExport($ids), 'categories.xlsx');
     }
 }

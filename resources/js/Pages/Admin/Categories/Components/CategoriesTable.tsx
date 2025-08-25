@@ -198,11 +198,13 @@ export function CategoriesTable({data}:Props) {
 
     }
 
-    const handleBulkExport = () => {
+    const handleBulkExport = async () => {
         if (selectedIds.length === 0) return
-        router.post(route("admin.categories.bulkExport"), { ids: selectedIds }, {
-            preserveScroll: true,
-        })
+
+        const params = new URLSearchParams();
+        selectedIds.forEach((id) => params.append("ids[]", id));
+
+        window.location.href = route("admin.categories.bulkExport") + "?" + params.toString();
     }
     return (
         <div className="w-full">

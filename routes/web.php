@@ -51,11 +51,11 @@ Route::middleware('auth')->group(function () {
         Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
         Route::get('/categories/create', [CategoryController::class, 'create'])->name('categories.create');
         Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');
+        Route::post('categories/bulkdelete', [CategoryController::class, 'bulkDelete'])->name('categories.bulkDelete');
+        Route::get('/categories/bulkexport', [CategoryController::class, 'bulkExport'])->name('categories.bulkExport');
         Route::get('/categories/{id}', [CategoryController::class, 'edit'])->name('categories.edit');
         Route::put('categories/{id}', [CategoryController::class, 'update'])->name('categories.update');
         Route::delete('categories/{id}', [CategoryController::class, 'destroy'])->name('categories.destroy');
-        Route::post('categories/bulk-delete', [CategoryController::class, 'bulkDelete'])->name('categories.bulkDelete');
-        Route::post('categories/bulk-export', [CategoryController::class, 'bulkExport'])->name('categories.bulkExport');
     });
 });
 
