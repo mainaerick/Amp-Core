@@ -65,7 +65,7 @@ export default function Index({products}) {
                 </div>
             </div>
 
-            <ProductsTable  data={products.data}/>
+            <ProductsTable  paginated_data={products}/>
         </div>
         </AdminLayout>
     )

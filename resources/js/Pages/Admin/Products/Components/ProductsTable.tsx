@@ -27,105 +27,16 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
-import { Link } from '@inertiajs/react';
+import { Link, router } from '@inertiajs/react';
+import { Product } from '@/Pages/Admin/Products/Core/_models';
+import { Pagination } from 'antd';
 
-// Sample data
-const data: Product[] = [
-    {
-        id: "PROD-1",
-        name: "JBL Premium Speakers",
-        category: "Speakers",
-        price: 299.99,
-        stock: 24,
-        status: "in-stock",
-    },
-    {
-        id: "PROD-2",
-        name: 'Alpine Subwoofer 12"',
-        category: "Subwoofers",
-        price: 199.99,
-        stock: 18,
-        status: "in-stock",
-    },
-    {
-        id: "PROD-3",
-        name: "Pioneer 5-Channel Amplifier",
-        category: "Amplifiers",
-        price: 349.99,
-        stock: 12,
-        status: "in-stock",
-    },
-    {
-        id: "PROD-4",
-        name: "Kenwood Car Stereo",
-        category: "Car Audio & Video",
-        price: 279.99,
-        stock: 8,
-        status: "low-stock",
-    },
-    {
-        id: "PROD-5",
-        name: "Sony Wireless Speakers",
-        category: "Speakers",
-        price: 159.99,
-        stock: 0,
-        status: "out-of-stock",
-    },
-    {
-        id: "PROD-6",
-        name: 'JBL Subwoofer 10"',
-        category: "Subwoofers",
-        price: 149.99,
-        stock: 15,
-        status: "in-stock",
-    },
-    {
-        id: "PROD-7",
-        name: "Alpine Head Unit",
-        category: "Car Audio & Video",
-        price: 399.99,
-        stock: 6,
-        status: "low-stock",
-    },
-    {
-        id: "PROD-8",
-        name: "Pioneer DJ Speakers",
-        category: "Speakers",
-        price: 499.99,
-        stock: 10,
-        status: "in-stock",
-    },
-    {
-        id: "PROD-9",
-        name: "Audio Cable Kit",
-        category: "Accessories",
-        price: 49.99,
-        stock: 30,
-        status: "in-stock",
-    },
-    {
-        id: "PROD-10",
-        name: "Kenwood 2-Channel Amplifier",
-        category: "Amplifiers",
-        price: 199.99,
-        stock: 0,
-        status: "out-of-stock",
-    },
-]
-
-type Product = {
-    id: string
-    name: string
-    category: string
-    price: number
-    stock: number
-    status: "in-stock" | "low-stock" | "out-of-stock"
-}
 interface Props {
-    data:any
+    paginated_data:any
 }
 
-export function ProductsTable({data}:Props) {
+export function ProductsTable({paginated_data,filters,passed_params}:Props) {
+    let data = paginated_data.data
     const [sorting, setSorting] = useState<SortingState>([])
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
     const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
@@ -210,7 +121,7 @@ export function ProductsTable({data}:Props) {
             cell: ({ row }) => {
                 const stock_status = row.getValue("stock_status") as string
                 return (
-                    <Badge variant={stock_status === "in-stock" ? "default" : status === "low-stock" ? "warning" : "destructive"}>
+                    <Badge variant={stock_status === "in-stock" ? "default" : status === "low-stock" ? "warning" : "destructive" as any}>
                         {stock_status === "in-stock" ? "In Stock" : stock_status === "low-stock" ? "Low Stock" : "Out of Stock"}
                     </Badge>
                 )
@@ -274,7 +185,11 @@ export function ProductsTable({data}:Props) {
             rowSelection,
         },
     })
-
+    const handleTableChange = (page) => {
+        const queryParams = {page };
+        router.get(route("admin.products.index", passed_params?.id ? { id: passed_params.id } : {}), queryParams, { preserveScroll: true });
+    };
+    console.log(data)
     return (
         <div className="w-full">
             <div className="rounded-md border">
@@ -317,17 +232,12 @@ export function ProductsTable({data}:Props) {
                     selected.
                 </div>
                 <div className="space-x-2">
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => table.previousPage()}
-                        disabled={!table.getCanPreviousPage()}
-                    >
-                        Previous
-                    </Button>
-                    <Button variant="outline" size="sm" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
-                        Next
-                    </Button>
+                    <Pagination
+                        current={paginated_data.current_page}
+                        total={paginated_data.total}
+                        pageSize={paginated_data.per_page}
+                        onChange={handleTableChange}
+                    />
                 </div>
             </div>
         </div>

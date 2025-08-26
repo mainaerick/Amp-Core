@@ -12,28 +12,27 @@ import { ArrowLeft, Save } from "lucide-react"
 import AdminLayout from "@/Layouts/AdminLayout"
 import { ImageUploader } from "@/Pages/Admin/Products/Components/ImageUploader"
 import { SpecificationsEditor } from "@/Pages/Admin/Products/Components/SpecificationsEditor"
+import { Product } from '@/Pages/Admin/Products/Core/_models';
 
 type ProductFormProps = {
-    product?: any // product when editing
+    product?: Product // product when editing
     categories: { id: string; name: string }[]
     brands: { id: string; name: string }[]
 }
 
 function ProductForm({ product, categories, brands }: ProductFormProps) {
-    const { data, setData, post, put, processing, errors } = useForm<any>({
+    const { data, setData, post, put, processing, errors } = useForm<Product|any>({
         name: product?.name || "",
-        sku: product?.sku || "",
         category_id: product?.category_id || "",
-        brand_id: product?.brand_id || "",
         short_description: product?.short_description || "",
         description: product?.description || "",
         price: product?.price || "",
         sale_price: product?.sale_price || "",
-        featured: product?.featured || false,
-        published: product?.published ?? true,
-        stock: product?.stock || 0,
+        featured: product?.is_featured || false,
+        published: product?.is_published ?? true,
+        stock: product?.stock_quantity || 0,
         specs:product?.specs || [],
-        low_stock: product?.low_stock || 5,
+        low_stock: product?.low_stock_threshold || 5,
         stock_status: product?.stock_status || "in-stock",
         track_inventory: product?.track_inventory ?? true,
         allow_backorders: product?.allow_backorders ?? false,
