@@ -121,8 +121,11 @@ type Product = {
     stock: number
     status: "in-stock" | "low-stock" | "out-of-stock"
 }
+interface Props {
+    data:any
+}
 
-export function ProductsTable() {
+export function ProductsTable({data}:Props) {
     const [sorting, setSorting] = useState<SortingState>([])
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
     const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
@@ -190,7 +193,7 @@ export function ProductsTable() {
             },
         },
         {
-            accessorKey: "stock",
+            accessorKey: "stock_quantity",
             header: ({ column }) => {
                 return (
                     <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
@@ -199,16 +202,16 @@ export function ProductsTable() {
                     </Button>
                 )
             },
-            cell: ({ row }) => <div>{row.getValue("stock")}</div>,
+            cell: ({ row }) => <div>{row.getValue("stock_quantity")}</div>,
         },
         {
-            accessorKey: "status",
+            accessorKey: "stock_status",
             header: "Status",
             cell: ({ row }) => {
-                const status = row.getValue("status") as string
+                const stock_status = row.getValue("stock_status") as string
                 return (
-                    <Badge variant={status === "in-stock" ? "default" : status === "low-stock" ? "warning" : "destructive"}>
-                        {status === "in-stock" ? "In Stock" : status === "low-stock" ? "Low Stock" : "Out of Stock"}
+                    <Badge variant={stock_status === "in-stock" ? "default" : status === "low-stock" ? "warning" : "destructive"}>
+                        {stock_status === "in-stock" ? "In Stock" : stock_status === "low-stock" ? "Low Stock" : "Out of Stock"}
                     </Badge>
                 )
             },

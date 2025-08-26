@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 
 class ProductController extends Controller
@@ -17,15 +20,22 @@ class ProductController extends Controller
 
     public function create()
     {
-        return Inertia::render('Admin/Products/Create');
+        $categories = Category::latest()->get();
+
+        return Inertia::render('Admin/Products/Create', [
+            'categories' => $categories
+        ]);
     }
 
     public function store(Request $request)
     {
-        $data = $request->validate([
+
+
+
+        $validator = Validator::make($request->all(), [
             'name' => 'required',
             'slug' => 'nullable|unique:products,slug',
-            'category' => 'required',
+            'category_id' => 'required',
             'short_description' => 'required',
             'description' => 'required',
             'price' => 'nullable|numeric',
@@ -33,8 +43,16 @@ class ProductController extends Controller
             'specs' => 'required|array',
             'features' => 'nullable|array',
             'demo_video' => 'nullable|url',
-            'is_new' => 'boolean'
+            'is_new' => 'boolean',
         ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $data = $validator->validated();
 
         $data['slug'] = $data['slug'] ?? Str::slug($data['name']);
 

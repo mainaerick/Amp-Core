@@ -45,6 +45,15 @@ Route::middleware(['auth'])->group(function () {
     });
 
 });
+// Admin Products
+Route::middleware(['auth'])->group(function () {
+    Route::prefix('admin')->name('admin.')->group(function () {
+        Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+        Route::get('/products/create', [ProductController::class, 'create'])->name('products.create');
+        Route::post('/products', [ProductController::class, 'store'])->name('products.store');
+    });
+
+});
 //Admin Category
 Route::middleware('auth')->group(function () {
     Route::prefix('admin')->name('admin.')->group(function () {

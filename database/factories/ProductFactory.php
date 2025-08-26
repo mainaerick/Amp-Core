@@ -12,26 +12,33 @@ class ProductFactory extends Factory
 
     public function definition(): array
     {
+        $name = $this->faker->words(3, true);
         return [
-            'name' => $this->faker->words(3, true),
-            'slug' => $this->faker->unique()->slug,
-            'category_id' => Category::inRandomOrder()->first()->id,
-            'short_description' => $this->faker->sentence,
-            'description' => $this->faker->paragraph(4),
-            'price' => $this->faker->randomFloat(2, 100, 1000),
-            'images' => json_encode([
-                '/placeholder.svg?height=600&width=600',
-                '/placeholder.svg?height=600&width=600',
-            ]),
+            'name' => ucfirst($name),
+            'slug' => Str::slug($name) . '-' . $this->faker->unique()->numberBetween(100, 999),
+            'category_id' => Category::inRandomOrder()->first()->id ?? 'CAT-1',
+            'short_description' => $this->faker->sentence(),
+            'description' => $this->faker->paragraph(),
+            'price' => $this->faker->randomFloat(2, 50, 1000),
+            'sale_price' => $this->faker->optional()->randomFloat(2, 30, 900),
+            'images' => json_encode([$this->faker->imageUrl(600, 400, 'tech')]),
             'specs' => json_encode([
-                ['name' => 'Power', 'value' => '500W'],
-                ['name' => 'Frequency Response', 'value' => '45Hz - 20kHz'],
+                ['name' => 'Power Output', 'value' => $this->faker->numberBetween(50, 500) . 'W RMS'],
+                ['name' => 'Impedance', 'value' => '4 Ohms'],
             ]),
-            'features' => json_encode([
-                'High output', 'Low distortion'
-            ]),
-            'demo_video' => 'https://www.youtube.com/embed/dQw4w9WgXcQ',
-            'is_new' => $this->faker->boolean(40),
+            'features' => json_encode($this->faker->randomElements(
+                ['Bluetooth', 'Water Resistant', 'Wireless Remote', 'App Support'],
+                2
+            )),
+            'demo_video' => $this->faker->optional()->url(),
+            'stock_quantity' => $this->faker->numberBetween(0, 100),
+            'low_stock_threshold' => 5,
+            'stock_status' => $this->faker->randomElement(['in-stock', 'out-of-stock', 'on-backorder']),
+            'track_inventory' => true,
+            'allow_backorders' => false,
+            'is_new' => $this->faker->boolean(30),
+            'is_featured' => $this->faker->boolean(20),
+            'is_published' => true,
         ];
     }
 }

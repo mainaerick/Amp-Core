@@ -6,7 +6,8 @@ import { Link } from '@inertiajs/react';
 import { ProductsTable } from '@/Pages/Admin/Products/Components/ProductsTable';
 import AdminLayout from '@/Layouts/AdminLayout';
 
-export default function Index() {
+export default function Index({products}) {
+    console.log(products)
     return (
         <AdminLayout>
             <div className="flex flex-col gap-6">
@@ -64,7 +65,7 @@ export default function Index() {
                 </div>
             </div>
 
-            <ProductsTable />
+            <ProductsTable  data={products.data}/>
         </div>
         </AdminLayout>
     )
