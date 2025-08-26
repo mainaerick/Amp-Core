@@ -11,10 +11,42 @@ use Inertia\Inertia;
 
 class ProductController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $query = Product::query();
+
+        // 🔍 Search
+        if ($request->filled('search')) {
+            $query->where(function ($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->search . '%')
+                    ->orWhere('slug', 'like', '%' . $request->search . '%')
+                    ->orWhere('short_description', 'like', '%' . $request->search . '%');
+            });
+        }
+
+        // 📂 Filter by category
+        if ($request->filled('category')) {
+            $query->where('category_id', $request->category);
+        }
+
+        // 📦 Filter by stock status
+        if ($request->filled('stock_status')) {
+            $query->where('stock_status', $request->stock_status);
+        }
+
+        // ➕ More filters example (featured / published)
+        if ($request->boolean('is_featured')) {
+            $query->where('is_featured', true);
+        }
+
+        if ($request->boolean('is_published')) {
+            $query->where('is_published', true);
+        }
+
         return Inertia::render('Admin/Products/Index', [
-            'products' => Product::latest()->paginate(10)
+            'filters' => $request->only(['search', 'category', 'stock_status', 'is_featured', 'is_published']),
+            'products' => $query->latest()->paginate(10)->withQueryString(),
+            'categories' => Category::all(['id', 'name']), // for select dropdown
         ]);
     }
 

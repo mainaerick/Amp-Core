@@ -1,13 +1,22 @@
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import {
+    Button,
+    Input,
+    Select,
+} from 'antd';
 import { Plus, Search, Filter } from "lucide-react"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Link } from '@inertiajs/react';
+import {  SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Link, router } from '@inertiajs/react';
 import { ProductsTable } from '@/Pages/Admin/Products/Components/ProductsTable';
 import AdminLayout from '@/Layouts/AdminLayout';
 
-export default function Index({products}) {
-    console.log(products)
+export default function Index({products,filters}) {
+    const handleFilterChange = (key: string, value: any) => {
+        router.get(
+            route("admin.products.index"),
+            { ...filters, [key]: value },
+            { preserveState: true, replace: true }
+        );
+    };
     return (
         <AdminLayout>
             <div className="flex flex-col gap-6">
@@ -23,11 +32,13 @@ export default function Index({products}) {
 
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex w-full max-w-sm items-center space-x-2">
-                    <Input type="search" placeholder="Search products..." className="h-9" />
-                    <Button type="submit" size="sm" variant="secondary">
-                        <Search className="h-4 w-4" />
-                        <span className="sr-only">Search</span>
-                    </Button>
+                    <Input.Search
+                        placeholder="Search products..."
+                        defaultValue={filters.search}
+                        onPressEnter={(e) => handleFilterChange("search", e.target.value)}
+                        onClear={(e) => handleFilterChange("search", undefined)}
+                        allowClear
+                    />
                 </div>
                 <div className="flex flex-col gap-4 sm:flex-row">
                     <div className="flex items-center space-x-2">
