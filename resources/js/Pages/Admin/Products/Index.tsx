@@ -8,8 +8,9 @@ import {  SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/compon
 import { Link, router } from '@inertiajs/react';
 import { ProductsTable } from '@/Pages/Admin/Products/Components/ProductsTable';
 import AdminLayout from '@/Layouts/AdminLayout';
+import MoreFilters from '@/Pages/Admin/Products/Components/MoreFilters';
 
-export default function Index({products,filters}) {
+export default function Index({products,categories,filters}) {
     const handleFilterChange = (key: string, value: any) => {
         router.get(
             route("admin.products.index"),
@@ -22,11 +23,11 @@ export default function Index({products,filters}) {
             <div className="flex flex-col gap-6">
             <div className="flex items-center justify-between">
                 <h1 className="text-3xl font-bold tracking-tight">Products</h1>
-                <Button asChild>
-                    <Link href="/admin/products/create">
+                <Button size="small" onClick={()=>router.get(route("admin.products.create"))}  className={"h-9"}                                                                                                                                           >
+                    {/*<Link href="/admin/products/create">*/}
                         <Plus className="mr-2 h-4 w-4" />
                         Add Product
-                    </Link>
+                    {/*</Link>*/}
                 </Button>
             </div>
 
@@ -42,41 +43,38 @@ export default function Index({products,filters}) {
                 </div>
                 <div className="flex flex-col gap-4 sm:flex-row">
                     <div className="flex items-center space-x-2">
-                        <Select defaultValue="all">
-                            <SelectTrigger className="h-9 w-[180px]">
-                                <SelectValue placeholder="Category" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="all">All Categories</SelectItem>
-                                <SelectItem value="speakers">Speakers</SelectItem>
-                                <SelectItem value="subwoofers">Subwoofers</SelectItem>
-                                <SelectItem value="amplifiers">Amplifiers</SelectItem>
-                                <SelectItem value="accessories">Accessories</SelectItem>
-                                <SelectItem value="car-audio">Car Audio & Video</SelectItem>
-                            </SelectContent>
+                        <Select
+                            placeholder="Filter by Category"
+                            style={{ width: 200 }}
+                            value={filters.category || undefined}
+                            onChange={(val) => handleFilterChange("category", val)}
+                            allowClear
+                        >
+                            {categories.map((cat) => (
+                                <Select.Option key={cat.id} value={cat.id}>
+                                    {cat.name}
+                                </Select.Option>
+                            ))}
                         </Select>
                     </div>
                     <div className="flex items-center space-x-2">
-                        <Select defaultValue="in-stock">
-                            <SelectTrigger className="h-9 w-[180px]">
-                                <SelectValue placeholder="Status" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="all">All Status</SelectItem>
-                                <SelectItem value="in-stock">In Stock</SelectItem>
-                                <SelectItem value="low-stock">Low Stock</SelectItem>
-                                <SelectItem value="out-of-stock">Out of Stock</SelectItem>
-                            </SelectContent>
+                        <Select
+                            placeholder="Stock Status"
+                            style={{ width: 200 }}
+                            value={filters.stock_status || undefined}
+                            onChange={(val) => handleFilterChange("stock_status", val)}
+                            allowClear
+                        >
+                            <Select.Option value="in-stock">In Stock</Select.Option>
+                            <Select.Option value="out-of-stock">Out of Stock</Select.Option>
+                            <Select.Option value="on-backorder">On Backorder</Select.Option>
                         </Select>
                     </div>
-                    <Button variant="outline" size="sm" className="h-9">
-                        <Filter className="mr-2 h-4 w-4" />
-                        More Filters
-                    </Button>
+                    <MoreFilters filters={filters}/>
                 </div>
             </div>
 
-            <ProductsTable  paginated_data={products}/>
+            <ProductsTable paginated_data={products}/>
         </div>
         </AdminLayout>
     )
