@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DealerController;
 use App\Http\Controllers\ProductController;
@@ -51,8 +52,20 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/products', [ProductController::class, 'index'])->name('products.index');
         Route::get('/products/create', [ProductController::class, 'create'])->name('products.create');
         Route::post('/products', [ProductController::class, 'store'])->name('products.store');
+        Route::get('/products/{id}', [ProductController::class, 'edit'])->name('products.edit');
+        Route::put('products/{id}', [ProductController::class, 'update'])->name('products.update');
     });
 
+});
+// Admin Brands
+Route::middleware(['auth'])->group(function () {
+    Route::prefix('admin')->name('admin.')->group(function () {
+        Route::get('/brands', [BrandController::class, 'index'])->name('brands.index');
+        Route::get('/brands/create', [BrandController::class, 'create'])->name('brands.create');
+        Route::post('/brands', [BrandController::class, 'store'])->name('brands.store');
+        Route::get('/brands/{id}', [BrandController::class, 'edit'])->name('brands.edit');
+        Route::put('brands/{id}', [BrandController::class, 'update'])->name('brands.update');
+    });
 });
 //Admin Category
 Route::middleware('auth')->group(function () {

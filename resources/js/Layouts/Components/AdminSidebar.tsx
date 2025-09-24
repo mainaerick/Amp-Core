@@ -58,14 +58,14 @@ export function AdminSidebar() {
                             </Link>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
-                    {/*<SidebarMenuItem>*/}
-                    {/*    <SidebarMenuButton asChild isActive={isActive("/admin/dealers")}>*/}
-                    {/*        <Link href="/admin/dealers">*/}
-                    {/*            <MapPin className="h-4 w-4" />*/}
-                    {/*            <span>Dealers</span>*/}
-                    {/*        </Link>*/}
-                    {/*    </SidebarMenuButton>*/}
-                    {/*</SidebarMenuItem>*/}
+                    <SidebarMenuItem>
+                        <SidebarMenuButton asChild isActive={isActive("/admin/dealers")}>
+                            <Link href="/admin/brands">
+                                <MapPin className="h-4 w-4" />
+                                <span>Brands</span>
+                            </Link>
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
                     {/*<SidebarMenuItem>*/}
                     {/*    <SidebarMenuButton asChild isActive={isActive("/admin/inquiries")}>*/}
                     {/*        <Link href="/admin/inquiries">*/}

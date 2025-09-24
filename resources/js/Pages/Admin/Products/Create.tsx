@@ -50,7 +50,7 @@ function Create({ product, categories, brands }: ProductFormProps) {
 
     return (
         <AdminLayout>
-            <ProductForm categories={categories} brands={[]}/>
+            <ProductForm categories={categories} brands={brands}/>
         </AdminLayout>
     )
 }

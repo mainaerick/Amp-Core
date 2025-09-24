@@ -10,7 +10,7 @@ export interface Product {
     name: string
     slug: string
     category_id: string
-    brand?: string
+    brand_id?: string
     dealer_id?: string | null
 
     short_description: string

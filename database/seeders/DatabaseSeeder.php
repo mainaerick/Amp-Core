@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Dealer;
 use App\Models\Product;
@@ -38,6 +39,7 @@ class DatabaseSeeder extends Seeder
             'status' => 'active',
         ]);
         Dealer::factory(5)->create();
+        Brand::factory()->count(5)->create();
         Product::factory()->count(20)->create();
         Setting::setSection('general', [
             'storeName' => 'SoundWave Audio',

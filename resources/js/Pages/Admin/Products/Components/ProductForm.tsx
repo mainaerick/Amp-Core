@@ -13,35 +13,38 @@ import AdminLayout from "@/Layouts/AdminLayout"
 import { ImageUploader } from "@/Pages/Admin/Products/Components/ImageUploader"
 import { SpecificationsEditor } from "@/Pages/Admin/Products/Components/SpecificationsEditor"
 import { Product } from '@/Pages/Admin/Products/Core/_models';
+import { Brand } from '@/Pages/Admin/Brands/Core/types';
 
 type ProductFormProps = {
     product?: Product // product when editing
     categories: { id: string; name: string }[]
-    brands: { id: string; name: string }[]
+    brands:Brand[]
 }
 
-function ProductForm({ product, categories, brands }: ProductFormProps) {
+function ProductForm({ product, categories,brands }: ProductFormProps) {
     const { data, setData, post, put, processing, errors } = useForm<Product|any>({
         name: product?.name || "",
         category_id: product?.category_id || "",
+        brand_id:product?.brand_id||"",
         short_description: product?.short_description || "",
         description: product?.description || "",
         price: product?.price || "",
         sale_price: product?.sale_price || "",
-        featured: product?.is_featured || false,
-        published: product?.is_published ?? true,
-        stock: product?.stock_quantity || 0,
+        is_featured: product?.is_featured || false,
+        is_published: product?.is_published ?? true,
+        stock_quantity: product?.stock_quantity || 0,
         specs:product?.specs || [],
-        low_stock: product?.low_stock_threshold || 5,
+        low_stock_threshold: product?.low_stock_threshold || 5,
         stock_status: product?.stock_status || "in-stock",
         track_inventory: product?.track_inventory ?? true,
         allow_backorders: product?.allow_backorders ?? false,
+        images: [] as (File | string)[],
     })
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
         if (product) {
-            put(route("products.update", product.id))
+            put(route("admin.products.update", product.id))
         } else {
             console.log(data)
             post(route("admin.products.store"))
@@ -119,24 +122,24 @@ function ProductForm({ product, categories, brands }: ProductFormProps) {
                                             </Select>
                                         </div>
 
-                                        {/*<div>*/}
-                                        {/*    <Label>Brand</Label>*/}
-                                        {/*    <Select*/}
-                                        {/*        onValueChange={(val) => setData("brand_id", val)}*/}
-                                        {/*        defaultValue={data.brand_id}*/}
-                                        {/*    >*/}
-                                        {/*        <SelectTrigger>*/}
-                                        {/*            <SelectValue placeholder="Select brand" />*/}
-                                        {/*        </SelectTrigger>*/}
-                                        {/*        <SelectContent>*/}
-                                        {/*            {brands.map((b) => (*/}
-                                        {/*                <SelectItem key={b.id} value={b.id}>*/}
-                                        {/*                    {b.name}*/}
-                                        {/*                </SelectItem>*/}
-                                        {/*            ))}*/}
-                                        {/*        </SelectContent>*/}
-                                        {/*    </Select>*/}
-                                        {/*</div>*/}
+                                        <div>
+                                            <Label>Brand</Label>
+                                            <Select
+                                                onValueChange={(val) => setData("brand_id", val)}
+                                                defaultValue={data.brand_id}
+                                            >
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder="Select brand" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    {brands.map((b) => (
+                                                        <SelectItem key={b.id} value={b.id}>
+                                                            {b.name}
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
                                     </div>
 
                                     <div>
@@ -176,16 +179,16 @@ function ProductForm({ product, categories, brands }: ProductFormProps) {
 
                                     <div className="flex items-center gap-2">
                                         <Switch
-                                            checked={data.featured}
-                                            onCheckedChange={(val) => setData("featured", val)}
+                                            checked={data.is_featured}
+                                            onCheckedChange={(val) => setData("is_featured", val)}
                                         />
                                         <Label>Featured Product</Label>
                                     </div>
 
                                     <div className="flex items-center gap-2">
                                         <Switch
-                                            checked={data.published}
-                                            onCheckedChange={(val) => setData("published", val)}
+                                            checked={data.is_published}
+                                            onCheckedChange={(val) => setData("is_published", val)}
                                         />
                                         <Label>Published</Label>
                                     </div>
@@ -200,7 +203,12 @@ function ProductForm({ product, categories, brands }: ProductFormProps) {
                                     <CardTitle>Product Images</CardTitle>
                                 </CardHeader>
                                 <CardContent>
-                                    <ImageUploader />
+                                    <ImageUploader
+                                        value={data.images}
+                                        onChange={(files) => setData("images", files)}
+                                        multiple
+                                        maxFiles={5}
+                                    />
                                 </CardContent>
                             </Card>
                         </TabsContent>
@@ -231,16 +239,16 @@ function ProductForm({ product, categories, brands }: ProductFormProps) {
                                             <Label>Stock</Label>
                                             <Input
                                                 type="number"
-                                                value={data.stock}
-                                                onChange={(e) => setData("stock", e.target.value)}
+                                                value={data.stock_quantity}
+                                                onChange={(e) => setData("stock_quantity", e.target.value as number)}
                                             />
                                         </div>
                                         <div>
                                             <Label>Low Stock Threshold</Label>
                                             <Input
                                                 type="number"
-                                                value={data.low_stock}
-                                                onChange={(e) => setData("low_stock", e.target.value)}
+                                                value={data.low_stock_threshold}
+                                                onChange={(e) => setData("low_stock_threshold", e.target.value)}
                                             />
                                         </div>
                                     </div>

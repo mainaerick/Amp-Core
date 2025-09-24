@@ -150,7 +150,7 @@ export function ProductsTable({paginated_data,filters,passed_params}:Props) {
                                 </Link>
                             </DropdownMenuItem>
                             <DropdownMenuItem asChild>
-                                <Link href={`/admin/products/${product.id}/edit`}>
+                                <Link href={`/admin/products/${product.id}`}>
                                     <Edit className="mr-2 h-4 w-4" />
                                     Edit
                                 </Link>
