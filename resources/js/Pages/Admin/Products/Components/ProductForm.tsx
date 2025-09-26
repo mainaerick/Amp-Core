@@ -46,7 +46,6 @@ function ProductForm({ product, categories,brands }: ProductFormProps) {
         if (product) {
             put(route("admin.products.update", product.id))
         } else {
-            console.log(data)
             post(route("admin.products.store"))
         }
     }

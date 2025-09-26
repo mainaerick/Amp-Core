@@ -12,7 +12,7 @@ interface Props {
     category: Category;
 }
 function Edit({ auth,product,categories,brands }:Props) {
-    console.log(product)
+    console.log(brands)
     return (
         <AdminLayout>
             <div className="flex flex-col gap-6">

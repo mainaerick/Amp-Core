@@ -61,6 +61,7 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ mode, category }) => {
         }
     }
 
+
     return (
         <Card title={`${mode === 'create' ? 'Create' : 'Edit'} Category`}>
             {contextHolder}

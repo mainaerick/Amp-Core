@@ -3,7 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Brand;
+use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 
 class BrandController extends Controller
@@ -64,17 +68,42 @@ class BrandController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Brand $brand)
+    public function edit( $id)
     {
-        //
+        $brand = Brand::findOrFail($id);
+        return Inertia::render('Admin/Brands/Edit', [
+            'brand' => $brand,
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Brand $brand)
+    public function update(Request $request, $id)
     {
-        //
+        $brand = Brand::findOrFail($id);
+        dd($request->all());
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'slug' => 'required|string|unique:brands,slug,' . $brand->id . ',id',
+            'description' => 'nullable|string',
+            'status' => 'required|in:active,inactive',
+            'logo_file' => 'nullable|image|max:2048',
+        ]);
+
+        $data = $validator->validate();
+
+        if ($request->hasFile('logo_file')) {
+            // delete old logo if exists
+            if ($brand->logo && Storage::disk('public')->exists($brand->logo)) {
+                Storage::disk('public')->delete($brand->logo);
+            }
+            $data['logo'] = $request->file('logo_file')->store('brands', 'public');
+        }
+
+        $brand->update($data);
+
+        return redirect()->route('admin.brands.index')->with('success', 'Brand updated successfully.');
     }
 
     /**
@@ -82,6 +111,23 @@ class BrandController extends Controller
      */
     public function destroy(Brand $brand)
     {
-        //
+        if ($brand->logo && Storage::disk('public')->exists($brand->logo)) {
+            Storage::disk('public')->delete($brand->logo);
+        }
+        $brand->delete();
+
+        return back()->with('success', 'Brand deleted successfully.');
     }
+    public function bulkDelete(Request $request)
+    {
+        $ids = $request->input('ids', []);
+        Brand::whereIn('id', $ids)->delete();
+
+        return back()->with('success', 'Selected brands deleted successfully.');
+    }
+//    public function bulkExport(Request $request)
+//    {
+//        $ids = $request->query('ids', []);
+//        return Excel::download(new BrandsExport($ids), 'brands.xlsx');
+//    }
 }
