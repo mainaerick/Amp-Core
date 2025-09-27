@@ -11,8 +11,13 @@ type Props = {
 
 export default function BrandForm({ brand, mode }: Props) {
     const [form] = Form.useForm()
-    const { data, setData, post } = useForm<Brand|any>({
-
+    const { data,
+        setData,
+        post,
+        put,
+        processing,
+        errors,
+    } = useForm<Brand|any>({
         name: brand?.name || "",
         slug: brand?.slug || "",
         description: brand?.description || "",
@@ -23,31 +28,22 @@ export default function BrandForm({ brand, mode }: Props) {
 
 
 
-    const handleSubmit = () => {
-        const routeName = mode === "create" ? "admin.brands.store" : "admin.brands.update"
-        const url = mode === "create" ? route(routeName) : route(routeName, brand?.id as string)
+    const handleSubmit = async () => {
+        const routeName = mode === 'create' ? 'admin.brands.store' : 'admin.brands.update'
+        const url = mode === 'create' ? route(routeName) : route(routeName, brand?.id as string)
 
-        if (mode === "create") {
-            post(url, {
-                _method: "POST",
-            }, {
-                forceFormData: true,   // ✅ pass as the 3rd argument
-                onSuccess: () => message.success("Brand created successfully"),
-                onError: () => message.error("Something went wrong"),
-            })
-        } else {
-            post(url, {
-                _method: "PUT",
-            }, {
-                forceFormData: true,   // ✅ pass as the 3rd argument
-                onSuccess: () => message.success("Brand updated successfully"),
-                onError: () => message.error("Something went wrong"),
-            })
-        }
+        const method = mode === 'create' ? post : put
+
+        method(url, {
+            onSuccess: () => {
+                message.success(`Brand ${mode === 'create' ? 'created' : 'updated'} successfully`)
+            },
+            onError: (e) => {
+                message.error('An error occurred. Please check the form.')
+                console.error(e)
+            },
+        })
     }
-    useEffect(() => {
-        console.log(data)
-    }, [data]);
     return (
         <Form form={form} layout="vertical" onFinish={handleSubmit} initialValues={data}>
             <Form.Item name="name" label="Name" required validateStatus={errors.name ? "error" : ""} help={errors.name}>

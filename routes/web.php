@@ -63,8 +63,12 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/brands', [BrandController::class, 'index'])->name('brands.index');
         Route::get('/brands/create', [BrandController::class, 'create'])->name('brands.create');
         Route::post('/brands', [BrandController::class, 'store'])->name('brands.store');
+        Route::post('brands/bulkdelete', [BrandController::class, 'bulkDelete'])->name('brands.bulkDelete');
+        Route::get('/brands/bulkexport', [BrandController::class, 'bulkExport'])->name('brands.bulkExport');
         Route::get('/brands/{id}', [BrandController::class, 'edit'])->name('brands.edit');
         Route::put('brands/{id}', [BrandController::class, 'update'])->name('brands.update');
+        Route::delete('brands/{id}', [BrandController::class, 'destroy'])->name('brands.destroy');
+
     });
 });
 //Admin Category

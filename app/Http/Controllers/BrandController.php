@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\BrandsExport;
 use App\Models\Brand;
-use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
+use Maatwebsite\Excel\Facades\Excel;
 
 class BrandController extends Controller
 {
@@ -82,7 +83,6 @@ class BrandController extends Controller
     public function update(Request $request, $id)
     {
         $brand = Brand::findOrFail($id);
-        dd($request->all());
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'slug' => 'required|string|unique:brands,slug,' . $brand->id . ',id',
@@ -109,11 +109,13 @@ class BrandController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Brand $brand)
+    public function destroy( $id)
     {
+        $brand = Brand::findOrFail($id);
         if ($brand->logo && Storage::disk('public')->exists($brand->logo)) {
             Storage::disk('public')->delete($brand->logo);
         }
+
         $brand->delete();
 
         return back()->with('success', 'Brand deleted successfully.');
@@ -125,9 +127,9 @@ class BrandController extends Controller
 
         return back()->with('success', 'Selected brands deleted successfully.');
     }
-//    public function bulkExport(Request $request)
-//    {
-//        $ids = $request->query('ids', []);
-//        return Excel::download(new BrandsExport($ids), 'brands.xlsx');
-//    }
+    public function bulkExport(Request $request)
+    {
+        $ids = $request->query('ids', []);
+        return Excel::download(new BrandsExport($ids), 'brands.xlsx');
+    }
 }
