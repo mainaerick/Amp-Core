@@ -25,17 +25,17 @@ class ProductController extends Controller
             });
         }
 
-        // 📂 Filter by category
+        // Filter by category
         if ($request->filled('category')) {
             $query->where('category_id', $request->category);
         }
 
-        // 📦 Filter by stock status
+        // Filter by stock status
         if ($request->filled('stock_status')) {
             $query->where('stock_status', $request->stock_status);
         }
 
-        // ➕ More filters example (featured / published)
+        // More filters example (featured / published)
         if ($request->boolean('is_featured')) {
             $query->where('is_featured', true);
         }

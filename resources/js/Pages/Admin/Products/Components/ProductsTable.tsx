@@ -189,7 +189,6 @@ export function ProductsTable({paginated_data,filters,passed_params}:Props) {
         const queryParams = {page };
         router.get(route("admin.products.index", passed_params?.id ? { id: passed_params.id } : {}), queryParams, { preserveScroll: true });
     };
-    console.log(data)
     return (
         <div className="w-full">
             <div className="rounded-md border">

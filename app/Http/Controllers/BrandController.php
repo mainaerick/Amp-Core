@@ -16,10 +16,24 @@ class BrandController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
+        $query = Brand::withCount('products');
+
+        // Search filter
+        if ($request->filled('search')) {
+            $query->where('name', 'like', '%' . $request->search . '%')
+                ->orWhere('slug', 'like', '%' . $request->search . '%');
+        }
+
+        // Status filter
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
         return Inertia::render('Admin/Brands/Index', [
-            'brands' => Brand::withCount('products')->paginate(10)
+            'brands' => $query->latest()->paginate(10)->withQueryString(),
+            'filters' => $request->only(['search', 'status']),
         ]);
     }
 

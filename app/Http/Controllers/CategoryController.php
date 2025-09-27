@@ -17,12 +17,24 @@ class CategoryController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $categories = Category::withCount('products')->get();
+        $query = Category::query();
+
+        // Search
+        if ($request->filled('search')) {
+            $query->where('name', 'like', '%' . $request->search . '%')
+                ->orWhere('slug', 'like', '%' . $request->search . '%');
+        }
+
+        // Status filter
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
 
         return Inertia::render('Admin/Categories/Index', [
-            'categories' => $categories,
+            'categories' => $query->latest()->paginate(10)->withQueryString(),
+            'filters' => $request->only(['search', 'status']),
         ]);
     }
 
