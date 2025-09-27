@@ -17,8 +17,20 @@ class BrandsExport implements FromCollection, WithHeadings
 
     public function collection()
     {
-        return Brand::whereIn('id', $this->ids)
-            ->get(['id', 'name', 'slug', 'status', 'created_at']);
+        return Brand::withCount('products') // 👈 adds products_count column
+        ->whereIn('id', $this->ids)
+            ->get(['id', 'name', 'slug', 'status', 'created_at'])
+            ->map(function ($brand) {
+                return [
+                    'id' => $brand->id,
+                    'name' => $brand->name,
+                    'slug' => $brand->slug,
+                    'products_count' => $brand->products_count,
+                    'status' => $brand->status,
+                    'created_at' => $brand->created_at,
+
+                ];
+            });
     }
     public function headings(): array
     {
@@ -26,6 +38,7 @@ class BrandsExport implements FromCollection, WithHeadings
             'ID',
             'Name',
             'Slug',
+            'Products Count',
             'Status',
             'Created At',
         ];
