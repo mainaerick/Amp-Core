@@ -4,5 +4,6 @@ type Category = {
     slug: string
     description: string
     products?: number
+    logo?:any
     status: "active" | "inactive"
 }

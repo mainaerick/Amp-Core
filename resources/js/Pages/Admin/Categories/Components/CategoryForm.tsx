@@ -1,6 +1,7 @@
-import React, { useEffect } from 'react'
-import { Button, Form, Input, Select, Space, message, Card } from 'antd'
+import React from 'react'
+import { Button, Form, Input, Select, Space, message, Card, Upload } from 'antd'
 import { useForm } from '@inertiajs/react'
+import { UploadOutlined } from '@ant-design/icons'
 import { generateSlug } from '@/Pages/Admin/Categories/lib/actions';
 
 type CategoryFormProps = {
@@ -14,37 +15,47 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ mode, category }) => {
     const [form] = Form.useForm()
     const [messageApi, contextHolder] = message.useMessage()
 
-    const {
-        data,
-        setData,
-        post,
-        put,
-        processing,
-        errors,
-    } = useForm<Category|any>({
+    const { data, setData, post, processing, errors } = useForm<any>({
         name: category?.name || '',
         slug: category?.slug || '',
         description: category?.description || '',
         status: category?.status || 'active',
+        logo: category?.logo || '',
+        logo_file: null,
+        _method: mode === 'edit' ? 'put' : post, // spoof PUT for Laravel
     })
 
-    // useEffect(() => {
-    //     form.setFieldsValue(data)
-    // }, [data, form])
-
-    const onFinish = async () => {
+    const onFinish = () => {
         const routeName = mode === 'create' ? 'admin.categories.store' : 'admin.categories.update'
-        const url = mode === 'create' ? route(routeName) : route(routeName, category?.id as string)
+        const url = mode === "create" ? route(routeName) : route(routeName, category?.id as string)
 
-        const method = mode === 'create' ? post : put
+        // The method to send the request (always post for file uploads)
+        const inertiaMethod = post // ALWAYS USE POST
 
-        method(url, {
+        const formData = new FormData()
+
+        //Add method spoofing for updates!
+        if (mode === "edit") {
+            formData.append('_method', 'PUT') // FOR METHOD SPOOFING
+        }
+
+        Object.entries(data).forEach(([key, value]) => {
+            // Skip adding the logo_file as a string if it's undefined, null, or is a File to prevent it from being added as "[object File]" string.
+            if (value !== undefined && value !== null) {
+                // When using PUT/PATCH with file uploads, Inertia recommends sending a POST request with the _method field.
+                // We ensure files are passed correctly, and for other values, we convert them to strings.
+                formData.append(key, value instanceof File ? value : String(value))
+            }
+        })
+
+        inertiaMethod(url, {
+            data: formData,
+            forceFormData: true,
             onSuccess: () => {
-                messageApi.success(`Category ${mode === 'create' ? 'created' : 'updated'} successfully`)
-                window.location.href = '/admin/categories'
+                message.success(`Category ${mode === "create" ? "created" : "updated"} successfully`)
             },
             onError: (e) => {
-                messageApi.error('An error occurred. Please check the form.')
+                message.error("An error occurred. Please check the form.")
                 console.error(e)
             },
         })
@@ -61,7 +72,6 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ mode, category }) => {
         }
     }
 
-
     return (
         <Card title={`${mode === 'create' ? 'Create' : 'Edit'} Category`}>
             {contextHolder}
@@ -70,7 +80,6 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ mode, category }) => {
                 form={form}
                 onFinish={onFinish}
                 initialValues={data}
-
             >
                 <Form.Item
                     label="Name"
@@ -104,7 +113,11 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ mode, category }) => {
                     validateStatus={errors.description && 'error'}
                     help={errors.description}
                 >
-                    <TextArea placeholder="Enter category description" rows={4} onChange={(e) => setData("description", e.target.value)}/>
+                    <TextArea
+                        placeholder="Enter category description"
+                        rows={4}
+                        onChange={(e) => setData("description", e.target.value)}
+                    />
                 </Form.Item>
 
                 <Form.Item
@@ -118,6 +131,32 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ mode, category }) => {
                         <Select.Option value="active">Active</Select.Option>
                         <Select.Option value="inactive">Inactive</Select.Option>
                     </Select>
+                </Form.Item>
+
+                {/* ✅ Logo Upload */}
+                <Form.Item
+                    label="Logo"
+                    validateStatus={errors.logo_file && 'error'}
+                    help={errors.logo_file}
+                >
+                    <Upload
+                        beforeUpload={(file) => {
+                            setData("logo_file", file) // ✅ raw File
+                            return false // prevent auto upload
+                        }}
+                        maxCount={1}
+                        listType="picture"
+                        accept="image/*"
+                    >
+                        <Button icon={<UploadOutlined />}>Upload Logo</Button>
+                    </Upload>
+
+                    {/* Show current logo if editing */}
+                    {category?.logo && !data.logo_file && (
+                        <div className="mt-2">
+                            <img src={`/storage/${category.logo}`} alt="Category Logo" className="h-16" />
+                        </div>
+                    )}
                 </Form.Item>
 
                 <Form.Item>

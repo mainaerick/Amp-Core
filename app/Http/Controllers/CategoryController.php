@@ -7,6 +7,8 @@ use App\Http\Requests\StoreCategoryRequest;
 use App\Http\Requests\UpdateCategoryRequest;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Maatwebsite\Excel\Facades\Excel;
@@ -51,27 +53,29 @@ class CategoryController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreCategoryRequest $request)
+    public function store(Request $request)
     {
-        $validated = $request->validate([
-            'name'        => ['required', 'string', 'max:255'],
-            'slug'        => ['nullable', 'string', 'max:255', 'unique:categories,slug'],
-            'description' => ['nullable', 'string'],
-            'status'      => ['required', 'in:active,inactive'],
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'slug' => 'required|string|unique:categories,slug',
+            'description' => 'nullable|string',
+            'status' => 'required|in:active,inactive',
+            'logo_file' => 'nullable|image|max:2048',
         ]);
 
-        // Auto-generate slug if not given
-        if (empty($validated['slug'])) {
-            $validated['slug'] = Str::slug($validated['name']);
+        $data = $validator->validate();
+        if (empty($data['slug'])) {
+            $data['slug'] = Str::slug($data['name']);
         }
-
+        if ($request->hasFile('logo_file')) {
+            $data['logo'] = $request->file('logo_file')->store('categories', 'public');
+        }
         // Generate ID like CAT-001
-        $validated['id'] = 'CAT-' . str_pad(Category::count() + 1, 3, '0', STR_PAD_LEFT);
+        $data['id'] = 'CAT-' . str_pad(Category::count() + 1, 3, '0', STR_PAD_LEFT);
 
-        Category::create($validated);
+        Category::create($data);
 
-        return redirect()->route('admin.categories.index')
-            ->with('success', 'Category created successfully.');
+        return redirect()->route('admin.categories.index')->with('success', 'Category created successfully.');
     }
 
     /**
@@ -98,24 +102,33 @@ class CategoryController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateCategoryRequest $request, $id)
+    public function update(Request $request, $id)
     {
         $category = Category::findOrFail($id);
-        $validated = $request->validate([
-            'name'        => ['required', 'string', 'max:255'],
-            'slug'        => ['nullable', 'string', 'max:255', 'unique:categories,slug,' . $category->id . ',id'],
-            'description' => ['nullable', 'string'],
-            'status'      => ['required', 'in:active,inactive'],
+
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'slug' => 'required|string|unique:categories,slug,' . $category->id . ',id',
+            'description' => 'nullable|string',
+            'status' => 'required|in:active,inactive',
+            'logo_file' => 'nullable|image|max:2048',
         ]);
 
-        if (empty($validated['slug'])) {
-            $validated['slug'] = Str::slug($validated['name']);
+        $data = $validator->validate();
+        if (empty($data['slug'])) {
+            $data['slug'] = Str::slug($data['name']);
+        }
+        if ($request->hasFile('logo_file')) {
+            // delete old logo if exists
+            if ($category->logo && Storage::disk('public')->exists($category->logo)) {
+                Storage::disk('public')->delete($category->logo);
+            }
+            $data['logo'] = $request->file('logo_file')->store('categories', 'public');
         }
 
-        $category->update($validated);
+        $category->update($data);
 
-        return redirect()->route('admin.categories.index')
-            ->with('success', 'Category updated successfully.');
+        return redirect()->route('admin.categories.index')->with('success', 'Category updated successfully.');
     }
 
     /**
