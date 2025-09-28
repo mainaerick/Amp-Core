@@ -63,8 +63,9 @@ class BrandController extends Controller
             $data['slug'] = Str::slug($data['name']);
         }
 
-        if ($request->hasFile('logo')) {
-            $data['logo'] = $request->file('logo')->store('brands', 'public');
+        if ($request->hasFile('logo_file')) {
+
+            $data['logo'] = $request->file('logo_file')->store('brands', 'public');
         }
 
         Brand::create($data);

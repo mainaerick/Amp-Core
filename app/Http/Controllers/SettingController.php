@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreSettingRequest;
 use App\Http\Requests\UpdateSettingRequest;
 use App\Models\Setting;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class SettingController extends Controller
@@ -17,9 +18,9 @@ class SettingController extends Controller
         return Inertia::render('Admin/Settings/Index', [
             'settings' => [
                 'general' => Setting::getSection('general'),
-                'contact' => Setting::getSection('contact'),
                 'store'   => Setting::getSection('store'),
-            ]
+                'contact' => Setting::getSection('contact'),
+            ],
         ]);
     }
 
@@ -66,8 +67,13 @@ class SettingController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateSettingRequest $request, Setting $setting)
-    {
+    public function update(Request $request,  $section)
+    { // Grab only the section being updated
+        $data = $request->input($section, []);
+        // Update key/value settings for that section
+        Setting::setSection($section, $data);
+
+        return redirect()->back()->with('success', ucfirst($section) . ' settings updated successfully.');
 
     }
 

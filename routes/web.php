@@ -39,13 +39,13 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 //Admin route
-Route::middleware(['auth'])->group(function () {
-    Route::prefix('admin')->name('admin.')->group(function () {
-        Route::resource('products', ProductController::class)->except(['show']);
-        Route::resource('dealers', DealerController::class);
-    });
-
-});
+//Route::middleware(['auth'])->group(function () {
+//    Route::prefix('admin')->name('admin.')->group(function () {
+//        Route::resource('products', ProductController::class)->except(['show']);
+//        Route::resource('dealers', DealerController::class);
+//    });
+//
+//});
 // Admin Products
 Route::middleware(['auth'])->group(function () {
     Route::prefix('admin')->name('admin.')->group(function () {
