@@ -9,38 +9,49 @@ import { ArrowRight } from 'lucide-react';
 import { Link } from '@inertiajs/react';
 import { ArrowRightOutlined } from '@ant-design/icons';
 import FeaturedBrands from '@/Pages/Public/Home/Components/FeaturedBrands';
+import { Brand } from '@/Pages/Admin/Brands/Core/types';
+import { Product } from '@/Pages/Admin/Products/Core/_models';
 
-function Index(props) {
+type Props = {
+    categories: Category[]
+    featured_products: Product[]
+    brands: Brand[]
+}
+function Index({ categories, featured_products, brands }: Props) {
+
     return (
         <Guest>
-            {/*<main className="flex flex-col min-h-screen">*/}
             <HeroSlider />
+
+            {/* Categories */}
             <section className="container mx-auto px-4 py-8 md:py-12">
-                <CategoryNavigation />
+                <CategoryNavigation categories={categories} />
             </section>
-            <section className="container mx-auto mx-auto px-4 py-8 md:py-12">
+
+            {/* Featured Products */}
+            <section className="container mx-auto px-4 py-8 md:py-12">
                 <div className="flex flex-col md:flex-row justify-between items-center mb-8">
                     <h2 className="text-3xl font-bold tracking-tight">Featured Products</h2>
-
                     <Link href={"/products"}>
-                        <Button asChild variant="ghost" className="group" type={"default"} size="large"
-                                icon={<ArrowRightOutlined />} iconPosition={"end"}>
+                        <Button type="default" size="large" icon={<ArrowRightOutlined />}>
                             View All Products
                         </Button>
                     </Link>
                 </div>
-                <FeaturedProducts />
+                <FeaturedProducts products={featured_products} />
             </section>
-            <section className="container mx-auto mx-auto px-4 py-8 md:py-12">
+
+            {/* Featured Brands */}
+            <section className="container mx-auto px-4 py-8 md:py-12">
                 <div className="flex flex-col md:flex-row justify-between items-center mb-8">
                     <h2 className="text-3xl font-bold tracking-tight">Our Brands</h2>
-                    <Button asChild variant="ghost" className="group" icon={<ArrowRightOutlined />} iconPosition={"end"}>
-                        <Link href="/brands">
+                    <Link href={"/brands"}>
+                        <Button type="default" size="large" icon={<ArrowRightOutlined />}>
                             View All Brands
-                        </Link>
-                    </Button>
+                        </Button>
+                    </Link>
                 </div>
-                <FeaturedBrands />
+                <FeaturedBrands brands={brands} />
             </section>
         </Guest>
 

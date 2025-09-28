@@ -1,64 +1,26 @@
-import { Card,Image } from 'antd';
+import { Card, Image } from 'antd'
 
+type Props = { brands: any[] }
 
-const brands = [
-    {
-        name: "AudioTech",
-        logo: "/placeholder.svg?height=100&width=200",
-    },
-    {
-        name: "SoundMaster",
-        logo: "/placeholder.svg?height=100&width=200",
-    },
-    {
-        name: "BassKing",
-        logo: "/placeholder.svg?height=100&width=200",
-    },
-    {
-        name: "PrecisionAudio",
-        logo: "/placeholder.svg?height=100&width=200",
-    },
-    {
-        name: "EliteSound",
-        logo: "/placeholder.svg?height=100&width=200",
-    },
-    {
-        name: "AcousticPro",
-        logo: "/placeholder.svg?height=100&width=200",
-    },
-]
-
-export default function FeaturedBrands() {
+export default function FeaturedBrands({ brands }: Props) {
     return (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
             {brands.map((brand) => (
                 <Card
-                    className={"bg-gray-200"}
-                    key={brand.name}
-                    style={{
-                        // background: "transparent",
-                        boxShadow: "none",
-                        padding: 0,
-                        textAlign: "center",
-                    }}
-
+                    key={brand.id}
+                    className="bg-gray-200"
+                    style={{ boxShadow: "none", textAlign: "center" }}
                 >
-                    <div style={{ position: "relative", width: "100%", height: "48px" }}>
-                        <Image
-                            src={brand.logo || "/placeholder.svg"}
+
+                    <div style={{ width: "100%", height: "48px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        <img
+                            src={brand.logo ? `/storage/${brand.logo}` : "/placeholder.svg"}
                             alt={brand.name}
-                            preview={false}
-                            style={{
-                                width: "100%",
-                                height: "100%",
-                                objectFit: "contain",
-                                position: "absolute",
-                                inset: 0,
-                            }}
+                            style={{ maxHeight: "48px", maxWidth: "100%", objectFit: "fill" }}
                         />
                     </div>
                 </Card>
-    ))}
-    </div>
-)
+            ))}
+        </div>
+    )
 }

@@ -2,30 +2,29 @@
 
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DealerController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Public\HomeController;
 use App\Http\Controllers\SettingController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::get('/', function () {
-    return Inertia::render('Public/Home/Index', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
-});
-Route::get('products', function () {
-    return Inertia::render('Public/Products/Index', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
-});
+//Route::get('/', function () {
+//    return Inertia::render('Public/Home/Index', [
+//        'canLogin' => Route::has('login'),
+//        'canRegister' => Route::has('register'),
+//        'laravelVersion' => Application::VERSION,
+//        'phpVersion' => PHP_VERSION,
+//    ]);
+//});
+Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/categories/{slug}', [\App\Http\Controllers\Public\CategoryController::class, 'show'])->name('categories.show');
+Route::get('/products', [\App\Http\Controllers\Public\ProductController::class, 'index'])
+    ->name('products.index');
+
 Route::get('products/{name}', function () {
     return Inertia::render('Public/Products/Show', [
         'canLogin' => Route::has('login'),
@@ -35,17 +34,16 @@ Route::get('products/{name}', function () {
     ]);
 });
 Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
+    return Inertia::render('Index');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-//Admin route
-//Route::middleware(['auth'])->group(function () {
-//    Route::prefix('admin')->name('admin.')->group(function () {
-//        Route::resource('products', ProductController::class)->except(['show']);
-//        Route::resource('dealers', DealerController::class);
-//    });
-//
-//});
+
+//Admin Dashboard
+Route::middleware(['auth'])->group(function () {
+    Route::prefix('admin')->name('admin.')->group(function () {
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    });
+});
 // Admin Products
 Route::middleware(['auth'])->group(function () {
     Route::prefix('admin')->name('admin.')->group(function () {

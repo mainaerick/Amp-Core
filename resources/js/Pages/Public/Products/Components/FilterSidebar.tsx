@@ -1,102 +1,109 @@
-
 import { useState } from "react"
-
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import { router } from "@inertiajs/react"
+import { Button } from "@/components/ui/button"
+import { Slider } from "@/components/ui/slider"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
-import { Slider } from "@/components/ui/slider"
-import { Button } from "@/components/ui/button"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { getCategoryFilters } from '@/Pages/Public/lib/filters';
+import { Select } from "antd"
 
-interface FilterSidebarProps {
+type Props = {
     category: string
+    filters: Record<string, any>
+    availableBrands: { id: string; name: string }[]
 }
 
-export default function FilterSidebar({ category }: FilterSidebarProps) {
-    // const router = useRouter()
-    // const searchParams = useSearchParams()
-    const filterGroups = getCategoryFilters(category)
+export default function FilterSidebar({ category, filters, availableBrands }: Props) {
+    const [priceRange, setPriceRange] = useState([
+        Number(filters.min_price || 0),
+        Number(filters.max_price || 2000),
+    ])
+    const [selectedBrands, setSelectedBrands] = useState<string[]>(filters.brands || [])
+    const [stockStatus, setStockStatus] = useState(filters.stock_status || "")
 
-    const [priceRange, setPriceRange] = useState([0, 2000])
+    const applyFilters = () => {
+        router.get(
+            route("categories.show", category),
+            {
+                ...filters,
+                min_price: priceRange[0],
+                max_price: priceRange[1],
+                brands: selectedBrands,
+                stock_status: stockStatus,
+            },
+            { preserveState: true, replace: true }
+        )
+    }
 
-    const handleReset = () => {
-        // router.push(`/${category}`)
+    const resetFilters = () => {
+        router.get(route("categories.show", category))
     }
 
     return (
         <div className="space-y-6">
             <div className="flex items-center justify-between">
                 <h2 className="text-lg font-semibold">Filters</h2>
-                <Button variant="ghost" size="sm" onClick={handleReset}>
+                <Button variant="ghost" size="sm" onClick={resetFilters}>
                     Reset
                 </Button>
             </div>
 
-            <div className="space-y-6">
-                <div>
-                    <h3 className="text-sm font-medium mb-3">Price Range</h3>
-                    <Slider
-                        defaultValue={[0, 2000]}
-                        max={2000}
-                        step={50}
-                        value={priceRange}
-                        onValueChange={setPriceRange}
-                        className="mb-6"
-                    />
-                    <div className="flex items-center justify-between">
-                        <span className="text-sm">${priceRange[0]}</span>
-                        <span className="text-sm">${priceRange[1]}</span>
-                    </div>
+            {/* Price */}
+            <div>
+                <h3 className="text-sm font-medium mb-3">Price Range</h3>
+                <Slider
+                    max={2000}
+                    step={50}
+                    value={priceRange}
+                    onValueChange={setPriceRange}
+                />
+                <div className="flex justify-between text-sm mt-2">
+                    <span>${priceRange[0]}</span>
+                    <span>${priceRange[1]}</span>
                 </div>
-
-                <Accordion type="multiple" defaultValue={filterGroups.map((group) => group.id)} className="space-y-4">
-                    {filterGroups.map((filterGroup) => (
-                        <AccordionItem key={filterGroup.id} value={filterGroup.id} className="border-b-0">
-                            <AccordionTrigger className="text-sm font-medium py-2 px-4 bg-secondary rounded-md hover:bg-secondary/80">
-                                {filterGroup.name}
-                            </AccordionTrigger>
-                            <AccordionContent className="pt-4 pb-2 px-1">
-                                {filterGroup.type === "checkbox" && (
-                                    <div className="space-y-2">
-                                        {filterGroup.options.map((option) => (
-                                            <div key={option.value} className="flex items-center space-x-2">
-                                                <Checkbox id={`${filterGroup.id}-${option.value}`} />
-                                                <Label
-                                                    htmlFor={`${filterGroup.id}-${option.value}`}
-                                                    className="text-sm font-normal cursor-pointer"
-                                                >
-                                                    {option.label}
-                                                </Label>
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
-
-                                {filterGroup.type === "radio" && (
-                                    <RadioGroup defaultValue={filterGroup.options[0]?.value}>
-                                        <div className="space-y-2">
-                                            {filterGroup.options.map((option) => (
-                                                <div key={option.value} className="flex items-center space-x-2">
-                                                    <RadioGroupItem value={option.value} id={`${filterGroup.id}-${option.value}`} />
-                                                    <Label
-                                                        htmlFor={`${filterGroup.id}-${option.value}`}
-                                                        className="text-sm font-normal cursor-pointer"
-                                                    >
-                                                        {option.label}
-                                                    </Label>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </RadioGroup>
-                                )}
-                            </AccordionContent>
-                        </AccordionItem>
-                    ))}
-                </Accordion>
             </div>
 
-            <Button className="w-full bg-primary hover:bg-primary/90">Apply Filters</Button>
+            {/* Brands */}
+            <div>
+                <h3 className="text-sm font-medium mb-3">Brands</h3>
+                <div className="space-y-2">
+                    {availableBrands.map((brand) => (
+                        <div key={brand.id} className="flex items-center space-x-2">
+                            <Checkbox
+                                id={`brand-${brand.id}`}
+                                checked={selectedBrands.includes(brand.id)}
+                                onCheckedChange={(checked) => {
+                                    if (checked) {
+                                        setSelectedBrands([...selectedBrands, brand.id])
+                                    } else {
+                                        setSelectedBrands(selectedBrands.filter((b) => b !== brand.id))
+                                    }
+                                }}
+                            />
+                            <Label htmlFor={`brand-${brand.id}`}>{brand.name}</Label>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            {/* Stock Status */}
+            <div>
+                <h3 className="text-sm font-medium mb-3">Stock Status</h3>
+                <Select
+                    style={{ width: "100%" }}
+                    placeholder="Select stock status"
+                    value={stockStatus || undefined}
+                    onChange={setStockStatus}
+                    allowClear
+                >
+                    <Select.Option value="in-stock">In Stock</Select.Option>
+                    <Select.Option value="out-of-stock">Out of Stock</Select.Option>
+                    <Select.Option value="on-backorder">On Backorder</Select.Option>
+                </Select>
+            </div>
+
+            <Button className="w-full" onClick={applyFilters}>
+                Apply Filters
+            </Button>
         </div>
     )
 }
