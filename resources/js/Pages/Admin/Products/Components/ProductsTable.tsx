@@ -82,7 +82,7 @@ export function ProductsTable({paginated_data,filters,passed_params}:Props) {
         {
             accessorKey: "category",
             header: "Category",
-            cell: ({ row }) => <div>{row.getValue("category")}</div>,
+            cell: ({ row }) => <div>{row.getValue("category").name}</div>,
         },
         {
             accessorKey: "price",

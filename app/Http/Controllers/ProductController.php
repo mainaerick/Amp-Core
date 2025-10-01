@@ -47,7 +47,7 @@ class ProductController extends Controller
 
         return Inertia::render('Admin/Products/Index', [
             'filters' => $request->only(['search', 'category', 'stock_status', 'is_featured', 'is_published']),
-            'products' => $query->latest()->paginate(10)->withQueryString(),
+            'products' => $query->with('category:id,name')->latest()->paginate(10)->withQueryString(),
             'categories' => Category::all(['id', 'name']), // for select dropdown
         ]);
     }
