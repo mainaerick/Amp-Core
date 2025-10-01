@@ -16,9 +16,7 @@ function Edit({ auth,product,categories,brands }:Props) {
     return (
         <AdminLayout>
             <div className="flex flex-col gap-6">
-
-
-                <ProductForm  product={product}  categories={categories} brands={brands}/>
+                <ProductForm  product={product}  categories={categories} brands={brands} mode={'edit'}/>
             </div>
         </AdminLayout>
 

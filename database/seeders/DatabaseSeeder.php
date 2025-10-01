@@ -6,9 +6,11 @@ use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Dealer;
 use App\Models\Product;
+use App\Models\ProductImage;
 use App\Models\Setting;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Database\Factories\ProductImageFactory;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -40,7 +42,9 @@ class DatabaseSeeder extends Seeder
         ]);
         Dealer::factory(5)->create();
         Brand::factory()->count(5)->create();
-        Product::factory()->count(20)->create();
+        ProductImage::truncate();
+        Product::truncate();
+        Product::factory()->count(20)->hasImages(ProductImage::factory()->count(3))->create();
         Setting::setSection('general', [
             'storeName' => 'SoundWave Audio',
             'storeUrl' => 'https://soundwaveaudio.com',

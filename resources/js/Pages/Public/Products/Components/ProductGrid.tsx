@@ -41,7 +41,11 @@ export default function ProductGrid({ products, categorySlug, filters = {} }: Pr
                     <Card key={product.id} className="overflow-hidden">
                         <div className="relative h-52 w-full">
                             <img
-                                src={product.images[0] || "/placeholder.svg"}
+                                src={
+                                    product.images && product.images.length > 0
+                                        ? `/storage/${product.images[0].path}`
+                                        : "/placeholder.svg"
+                                }
                                 alt={product.name}
                                 className="object-cover w-full h-full transition-transform hover:scale-105"
                             />

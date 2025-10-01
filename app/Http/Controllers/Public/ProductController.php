@@ -12,8 +12,8 @@ class ProductController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Product::query()->with('category', 'brand');
-
+//        $query = Product::query()->with('category', 'brand');
+        $query = Product::with(['images','category', 'brand']);
         // 🔹 Filters
         if ($request->filled('category')) {
             $query->where('category_id', $request->category);
@@ -31,7 +31,7 @@ class ProductController extends Controller
             $query->whereBetween('price', [$request->min_price, $request->max_price]);
         }
 
-        // 🔹 Sorting
+        // Sorting
         switch ($request->get('sort')) {
             case 'price-asc':
                 $query->orderBy('price', 'asc');
@@ -50,6 +50,26 @@ class ProductController extends Controller
             'filters' => $request->all(),
             'categories' => Category::select('id', 'name')->get(),
             'brands' => Brand::select('id', 'name')->get(),
+        ]);
+    }
+
+    public function show($slug)
+    {
+        $product = Product::with(['images', 'brand', 'category'])
+            ->where('slug', $slug)
+            ->firstOrFail();
+        $category = Category::findOrFail($product->category_id);
+        // Fetch related products from same category
+        $relatedProducts = Product::with('images')
+            ->where('category_id', $product->category_id)
+            ->where('id', '!=', $product->id)
+            ->take(4)
+            ->get();
+
+        return inertia('Public/Products/Show', [
+            'product' => $product,
+            'relatedProducts' => $relatedProducts,
+            'category' => $category,
         ]);
     }
 }

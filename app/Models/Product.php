@@ -10,6 +10,7 @@ class Product extends Model
     use HasFactory;
 
     protected $fillable = [
+        'id',
         'name',
         'slug',
         'category_id',
@@ -17,7 +18,6 @@ class Product extends Model
         'short_description',
         'description',
         'price',
-        'images',
         'specs',
         'features',
         'demo_video',
@@ -30,7 +30,6 @@ class Product extends Model
     ];
 
     protected $casts = [
-        'images' => 'array',
         'specs' => 'array',
         'features' => 'array',
         'is_new' => 'boolean',
@@ -47,5 +46,9 @@ class Product extends Model
     public function brand()
     {
         return $this->belongsTo(Brand::class, 'brand_id', 'id');
+    }
+    public function images()
+    {
+        return $this->hasMany(ProductImage::class);
     }
 }

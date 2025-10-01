@@ -19,7 +19,7 @@ export interface Product {
     price?: number | null
     sale_price?: number | null
 
-    images: string[] // stored as JSON in DB
+    images: any[] // stored as JSON in DB
     specs: Specification[] // stored as JSON in DB
     features?: string[] | null
     demo_video?: string | null

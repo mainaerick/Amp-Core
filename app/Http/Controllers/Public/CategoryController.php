@@ -13,8 +13,9 @@ class CategoryController extends Controller
     {
         $category = Category::where('slug', $slug)->firstOrFail();
 
-        $query = Product::where('category_id', $category->id);
-
+//        $query = Product::where('category_id', $category->id);
+        $query = Product::with(['images', 'brand'])
+            ->where('category_id', $category->id);
         // Price filter
         if ($request->filled('min_price') && $request->filled('max_price')) {
             $query->whereBetween('price', [$request->min_price, $request->max_price]);

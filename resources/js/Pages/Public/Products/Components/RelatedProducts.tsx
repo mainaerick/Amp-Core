@@ -2,15 +2,9 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Link } from '@inertiajs/react';
+import { Product } from '@/Pages/Admin/Products/Core/_models';
 
-interface Product {
-    id: number
-    name: string
-    slug: string
-    category: string
-    image: string
-    isNew?: boolean
-}
+
 
 interface RelatedProductsProps {
     products: Product[]

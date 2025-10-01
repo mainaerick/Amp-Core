@@ -25,14 +25,9 @@ Route::get('/categories/{slug}', [\App\Http\Controllers\Public\CategoryControlle
 Route::get('/products', [\App\Http\Controllers\Public\ProductController::class, 'index'])
     ->name('products.index');
 
-Route::get('products/{name}', function () {
-    return Inertia::render('Public/Products/Show', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
-});
+Route::get('/products/{slug}', [\App\Http\Controllers\Public\ProductController::class, 'show'])
+    ->name('products.show');
+
 Route::get('/dashboard', function () {
     return Inertia::render('Index');
 })->middleware(['auth', 'verified'])->name('dashboard');

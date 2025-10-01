@@ -53,6 +53,7 @@ export function ImageUploader({value = [],
     const removeImage = (index: number) => {
         const updated = images.filter((_, i) => i !== index)
         setImages(updated)
+
         onChange?.(updated)
     }
 
@@ -68,6 +69,7 @@ export function ImageUploader({value = [],
                     />
                 </div>
                 <Button
+                    type="button"
                     variant="destructive"
                     size="icon"
                     className="absolute -top-2 -right-2 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
