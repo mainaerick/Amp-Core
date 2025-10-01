@@ -84,10 +84,12 @@ class ProductController extends Controller
             'allow_backorders' => 'boolean',
         ]);
 
+
         if ($validator->fails()) {
-            return response()->json([
-                'errors' => $validator->errors()
-            ], 422);
+            return redirect()
+                ->back()
+                ->withErrors($validator)
+                ->withInput();
         }
 
         $data = $validator->validated();
@@ -144,12 +146,13 @@ class ProductController extends Controller
             'allow_backorders' => 'boolean',
             'existing_images' => 'nullable|array',
         ]);
-        if ($validator->fails()) {
-            return response()->json([
-                'errors' => $validator->errors()
-            ], 422);
-        }
 
+        if ($validator->fails()) {
+            return redirect()
+                ->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
         $data = $validator->validated();
         $data['slug'] = $data['slug'] ?? Str::slug($data['name']);
         // 1. Update product fields
