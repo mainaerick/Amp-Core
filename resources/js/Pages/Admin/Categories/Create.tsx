@@ -4,7 +4,7 @@ import { ArrowLeft } from 'lucide-react';
 import { Button } from "@/components/ui/button"
 import AdminLayout from '@/Layouts/AdminLayout';
 import CategoryForm from '@/Pages/Admin/Categories/Components/CategoryForm';
-function Create(props) {
+function Create() {
     return (
         <AdminLayout>
             <div className="flex flex-col gap-6">

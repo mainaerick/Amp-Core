@@ -33,9 +33,10 @@ import { Pagination } from 'antd';
 
 interface Props {
     paginated_data:any
+    passed_params:any
 }
 
-export function ProductsTable({paginated_data,filters,passed_params}:Props) {
+export function ProductsTable({paginated_data,passed_params}:Props) {
     let data = paginated_data.data
     const [sorting, setSorting] = useState<SortingState>([])
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
@@ -82,7 +83,10 @@ export function ProductsTable({paginated_data,filters,passed_params}:Props) {
         {
             accessorKey: "category",
             header: "Category",
-            cell: ({ row }) => <div>{row.getValue("category").name}</div>,
+            cell: ({ row }) => {
+                const category = row.getValue("category") as { id: string; name: string }
+                return <div>{category.name}</div>
+            },
         },
         {
             accessorKey: "price",
@@ -185,7 +189,7 @@ export function ProductsTable({paginated_data,filters,passed_params}:Props) {
             rowSelection,
         },
     })
-    const handleTableChange = (page) => {
+    const handleTableChange = (page:any) => {
         const queryParams = {page };
         router.get(route("admin.products.index", passed_params?.id ? { id: passed_params.id } : {}), queryParams, { preserveScroll: true });
     };

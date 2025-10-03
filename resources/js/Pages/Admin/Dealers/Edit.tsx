@@ -1,6 +1,6 @@
 import React from 'react';
 
-function Edit(props) {
+function Edit() {
     return (
         <div>edit</div>
     );

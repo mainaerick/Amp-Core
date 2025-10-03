@@ -1,6 +1,6 @@
 import React from 'react';
 
-function ProductSort(props) {
+function ProductSort() {
     return (
         <div></div>
     );

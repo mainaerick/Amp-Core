@@ -3,7 +3,10 @@ import { Button, Drawer, Switch, Select } from "antd"
 import { Filter } from "lucide-react"
 import { router } from "@inertiajs/react"
 
-export default function MoreFilters({ filters }) {
+interface Props {
+    filters:any
+}
+export default function MoreFilters({ filters }:Props) {
     const [open, setOpen] = useState(false)
 
     const handleFilterChange = (key: string, value: any) => {
@@ -16,7 +19,7 @@ export default function MoreFilters({ filters }) {
 
     return (
         <>
-            <Button variant="outline" size="small" className="h-9" onClick={() => setOpen(true)}>
+            <Button variant="outlined" size="small" className="h-9" onClick={() => setOpen(true)}>
                 <Filter className="mr-2 h-4 w-4" />
                 More Filters
             </Button>

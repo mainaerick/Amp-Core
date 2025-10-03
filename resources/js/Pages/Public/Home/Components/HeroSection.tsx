@@ -2,7 +2,7 @@ import React from 'react';
 import { Button } from "@/components/ui/button"
 import { Link } from '@inertiajs/react';
 import { ArrowRight } from 'lucide-react';
-function HeroSection(props) {
+function HeroSection() {
     return (
         <section className="relative w-full py-12 md:py-24 lg:py-32 overflow-hidden bg-muted">
             <div className="container px-4 md:px-6 relative z-10">

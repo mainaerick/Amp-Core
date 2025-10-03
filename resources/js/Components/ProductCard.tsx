@@ -1,10 +1,13 @@
 import React from "react"
 import { Card, Image, Tag, Button } from "antd"
 import { Link } from "@inertiajs/react"
+import { Product } from '@/Pages/Admin/Products/Core/_models';
 
 const { Meta } = Card
-
-const ProductCard = ({ product }) => {
+interface Props{
+    product:Product
+}
+const ProductCard = ({ product }:Props) => {
     return (
         <Card
             key={product.id}
@@ -19,7 +22,7 @@ const ProductCard = ({ product }) => {
                         style={{ width: "100%", height: "100%", objectFit: "cover" }}
                         className="transition-transform duration-300 hover:scale-105"
                     />
-                    {product.isNew && (
+                    {product.is_new && (
                         <Tag color="green" style={{ position: "absolute", top: 8, right: 8 }}>
                             New
                         </Tag>
@@ -29,7 +32,7 @@ const ProductCard = ({ product }) => {
         >
             <Meta
                 title={<h3 className="font-semibold text-lg">{product.name}</h3>}
-                description={<p className="text-sm text-gray-500 capitalize">{product.category}</p>}
+                description={<p className="text-sm text-gray-500 capitalize">{product.category_id}</p>}
             />
             <div className="pt-4">
                 <Link href={`/products/${product.slug}`}>

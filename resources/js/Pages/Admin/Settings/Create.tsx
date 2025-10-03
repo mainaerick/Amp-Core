@@ -1,6 +1,6 @@
 import React from 'react';
 
-function Create(props) {
+function Create() {
     return (
         <div>create</div>
     );

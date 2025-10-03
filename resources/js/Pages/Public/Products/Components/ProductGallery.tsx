@@ -76,7 +76,12 @@ export default function ProductGallery({ images }: ProductGalleryProps) {
             <Dialog open={zoomOpen} onOpenChange={setZoomOpen}>
                 <DialogContent className="max-w-4xl p-0 bg-background/95 backdrop-blur">
                     <div className="relative aspect-square w-full">
-                        <Image src={mainImage || "/placeholder.svg"} alt="Product image" fill className="object-contain" priority />
+                        <img
+                            src={mainImage || "/placeholder.svg"}
+                            alt="Product image"
+                            className="object-contain w-full h-full"
+                        />
+                        {/*<Image src={mainImage || "/placeholder.svg"} alt="Product image" fill className="object-contain" priority />*/}
                         <Button
                             variant="ghost"
                             size="icon"

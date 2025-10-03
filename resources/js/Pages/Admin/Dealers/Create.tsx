@@ -7,7 +7,7 @@ import {Dealer} from '@/Pages/Admin/Dealers/lib/types';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 
-function Create(props) {
+function Create() {
     const {data, setData, post, processing, errors} = useForm<Dealer>({
         name: "",
         location: "",
@@ -22,7 +22,7 @@ function Create(props) {
         post(route("dealers.store"), {
             onSuccess: () => message.success("Dealer created successfully"),
             onError: () => message.error("Error creating dealer"),
-        });
+        } as any);
     };
     return (
         <AdminLayout>

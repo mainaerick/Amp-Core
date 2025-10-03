@@ -1,64 +1,109 @@
 import React from 'react';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardFooter,
+    CardHeader,
+    CardTitle,
+} from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
 import { Loader2, Save } from 'lucide-react';
 import { TabsContent } from '@/components/ui/tabs';
 
-function GeneralInfo({ formData,handleChange,saveSettings,isLoading,errors }) {
+interface Props {
+    formData: any;
+    handleChange: (section: string, field: string, value: any) => void;
+    saveSettings: (section: string) => void;
+    isLoading: boolean;
+    errors: Record<string, string> | null;
+    setShowConfirmation: () => void;
+}
+
+function GeneralInfo({
+                         formData,
+                         handleChange,
+                         saveSettings,
+                         isLoading,
+                         errors,
+                         setShowConfirmation,
+                     }: Props) {
     return (
         <TabsContent value="general">
             <Card>
                 <CardHeader>
                     <CardTitle>General Settings</CardTitle>
-                    <CardDescription>Manage your store's general settings.</CardDescription>
+                    <CardDescription>
+                        Manage your store&apos;s general settings.
+                    </CardDescription>
                 </CardHeader>
+
                 <CardContent className="space-y-4">
+                    {/* Store name & URL */}
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                         <div className="space-y-2">
                             <Label htmlFor="store-name">Store Name</Label>
                             <Input
                                 id="store-name"
                                 value={formData?.general.storeName}
-                                onChange={(e) => handleChange('general', 'storeName', e.target.value)}
-                                error={errors?.['general.storeName']}
+                                onChange={(e) =>
+                                    handleChange('general', 'storeName', e.target.value)
+                                }
                             />
                             {errors?.['general.storeName'] && (
-                                <p className="text-sm text-red-500">{errors['general.storeName']}</p>
+                                <p className="text-sm text-red-500">
+                                    {errors['general.storeName']}
+                                </p>
                             )}
                         </div>
+
                         <div className="space-y-2">
                             <Label htmlFor="store-url">Store URL</Label>
                             <Input
                                 id="store-url"
                                 value={formData?.general.storeUrl}
-                                onChange={(e) => handleChange('general', 'storeUrl', e.target.value)}
-                                error={errors?.['general.storeUrl']}
+                                onChange={(e) =>
+                                    handleChange('general', 'storeUrl', e.target.value)
+                                }
                             />
                             {errors?.['general.storeUrl'] && (
-                                <p className="text-sm text-red-500">{errors['general.storeUrl']}</p>
+                                <p className="text-sm text-red-500">
+                                    {errors['general.storeUrl']}
+                                </p>
                             )}
                         </div>
                     </div>
 
+                    {/* Store description */}
                     <div className="space-y-2">
                         <Label htmlFor="store-description">Store Description</Label>
                         <Textarea
                             id="store-description"
                             value={formData?.general.storeDescription}
-                            onChange={(e) => handleChange('general', 'storeDescription', e.target.value)}
+                            onChange={(e) =>
+                                handleChange('general', 'storeDescription', e.target.value)
+                            }
                             className="min-h-[100px]"
-                            error={errors?.['general.storeDescription']}
                         />
                         {errors?.['general.storeDescription'] && (
-                            <p className="text-sm text-red-500">{errors['general.storeDescription']}</p>
+                            <p className="text-sm text-red-500">
+                                {errors['general.storeDescription']}
+                            </p>
                         )}
                     </div>
 
+                    {/* Admin Email + Country */}
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                         <div className="space-y-2">
                             <Label htmlFor="admin-email">Admin Email</Label>
@@ -66,18 +111,24 @@ function GeneralInfo({ formData,handleChange,saveSettings,isLoading,errors }) {
                                 id="admin-email"
                                 type="email"
                                 value={formData?.general.adminEmail}
-                                onChange={(e) => handleChange('general', 'adminEmail', e.target.value)}
-                                error={errors?.['general.adminEmail']}
+                                onChange={(e) =>
+                                    handleChange('general', 'adminEmail', e.target.value)
+                                }
                             />
                             {errors?.['general.adminEmail'] && (
-                                <p className="text-sm text-red-500">{errors['general.adminEmail']}</p>
+                                <p className="text-sm text-red-500">
+                                    {errors['general.adminEmail']}
+                                </p>
                             )}
                         </div>
+
                         <div className="space-y-2">
                             <Label htmlFor="country">Country</Label>
                             <Select
                                 value={formData?.general.country}
-                                onValueChange={(value) => handleChange('general', 'country', value)}
+                                onValueChange={(value) =>
+                                    handleChange('general', 'country', value)
+                                }
                             >
                                 <SelectTrigger id="country">
                                     <SelectValue placeholder="Select country" />
@@ -92,12 +143,15 @@ function GeneralInfo({ formData,handleChange,saveSettings,isLoading,errors }) {
                         </div>
                     </div>
 
+                    {/* Currency + Timezone */}
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                         <div className="space-y-2">
                             <Label htmlFor="currency">Currency</Label>
                             <Select
                                 value={formData?.general.currency}
-                                onValueChange={(value) => handleChange('general', 'currency', value)}
+                                onValueChange={(value) =>
+                                    handleChange('general', 'currency', value)
+                                }
                             >
                                 <SelectTrigger id="currency">
                                     <SelectValue placeholder="Select currency" />
@@ -110,11 +164,14 @@ function GeneralInfo({ formData,handleChange,saveSettings,isLoading,errors }) {
                                 </SelectContent>
                             </Select>
                         </div>
+
                         <div className="space-y-2">
                             <Label htmlFor="timezone">Timezone</Label>
                             <Select
                                 value={formData?.general.timezone}
-                                onValueChange={(value) => handleChange('general', 'timezone', value)}
+                                onValueChange={(value) =>
+                                    handleChange('general', 'timezone', value)
+                                }
                             >
                                 <SelectTrigger id="timezone">
                                     <SelectValue placeholder="Select timezone" />
@@ -129,17 +186,24 @@ function GeneralInfo({ formData,handleChange,saveSettings,isLoading,errors }) {
                         </div>
                     </div>
 
+                    {/* Maintenance mode */}
                     <div className="flex items-center space-x-2">
                         <Switch
                             id="maintenance-mode"
                             checked={formData?.general.maintenanceMode}
-                            onCheckedChange={(checked) => handleChange('general', 'maintenanceMode', checked)}
+                            onCheckedChange={(checked) =>
+                                handleChange('general', 'maintenanceMode', checked)
+                            }
                         />
                         <Label htmlFor="maintenance-mode">Maintenance Mode</Label>
                     </div>
                 </CardContent>
+
                 <CardFooter className="flex justify-between">
-                    <Button variant="outline" onClick={() => setShowConfirmation(true)}>
+                    <Button
+                        variant="outline"
+                        onClick={() => setShowConfirmation()}
+                    >
                         Reset to Defaults
                     </Button>
                     <Button onClick={() => saveSettings('general')} disabled={isLoading}>

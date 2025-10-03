@@ -8,20 +8,37 @@ type Props = {
     brand?: Brand
     mode: "create" | "edit"
 }
-
+interface BrandFormData {
+    id: string | undefined
+    name: string | undefined
+    slug: string | undefined
+    logo?: string | undefined
+    logo_file?:any,
+    description?: string | undefined
+    status: 'active' | 'inactive' | undefined
+    products_count?: number | undefined
+    _method:string,
+    [key: string]: any;}
+type BrandFormErrors = Partial<Record<keyof BrandFormData, string>>
 export default function BrandForm({ brand, mode }: Props) {
     const [form] = Form.useForm()
-    const { data, setData, post, processing, errors } = useForm<Brand|any>({
+    const form_ = useForm<BrandFormData>({
+        id: brand?.id || "",
         name: brand?.name || "",
         slug: brand?.slug || "",
         description: brand?.description || "",
-        status: brand?.status || "active",
+        status: (brand?.status as "active" | "inactive") || "active",
         logo: brand?.logo || "",
         logo_file: undefined,
         _method: mode === "create" ? "POST" : "PUT"
     })
-
-    // ... in BrandForm.tsx
+    const { data, setData, post, processing, errors } = form_ as typeof form_ & {
+        data:BrandFormData
+        setData:any
+        post:any
+        processing:any
+        errors: BrandFormErrors
+    }
 
     const handleSubmit = async () => {
         const routeName = mode === "create" ? "admin.brands.store" : "admin.brands.update"
@@ -47,12 +64,11 @@ export default function BrandForm({ brand, mode }: Props) {
         })
 
         inertiaMethod(url, {
-            data: formData,
             forceFormData: true,
             onSuccess: () => {
                 message.success(`Brand ${mode === "create" ? "created" : "updated"} successfully`)
             },
-            onError: (e) => {
+            onError: (e:any) => {
                 message.error("An error occurred. Please check the form.")
                 console.error(e)
             },

@@ -6,7 +6,7 @@ import { Brand } from '@/Pages/Admin/Brands/Core/types';
 
 type ProductFormProps = {
     product?: any // product when editing
-    categories: { id: string; name: string }[]
+    categories: Category[]
     brands: Brand[]
 }
 

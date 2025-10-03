@@ -19,14 +19,36 @@ import { Brand } from "@/Pages/Admin/Brands/Core/types"
 
 type ProductFormProps = {
     product?: Product
-    categories: { id: string; name: string }[]
+    categories: Category[]
     brands: Brand[]
 }
+type ProductFormData = {
+    name: string
+    category_id: string
+    brand_id: string
+    short_description?: string
+    description?: string
+    price: string | number
+    sale_price?: string | number
+    is_featured: boolean
+    is_published: boolean
+    stock_quantity: number
+    specs: Array<Record<string, any>> // or define a `Spec` type if you know the shape
+    low_stock_threshold: number
+    stock_status: "in-stock" | "out-of-stock" | "backorder"
+    track_inventory: boolean
+    allow_backorders: boolean
+    // For handling uploads and previews
+    images: string[]
+    existing_images: any[]
+    _method: "post" | "put"
+    [key: string]: any // keep flexibility for Inertia
+}
+type BrandFormErrors = Partial<Record<keyof ProductFormData, string>>
 
 function ProductForm({ product, categories, brands }: ProductFormProps) {
     const mode = product ? "edit" : "create"
-
-    const { data, setData, post, processing, errors } = useForm<Product | any>({
+    const form_ = useForm<ProductFormData>({
         name: product?.name || "",
         category_id: product?.category_id || "",
         brand_id: product?.brand_id || "",
@@ -52,12 +74,15 @@ function ProductForm({ product, categories, brands }: ProductFormProps) {
             : [],
 
         _method: mode === "edit" ? "put" : "post",
-    })
+    } as any)
+    const { data, setData, post, processing, errors } = form_ as typeof form_ & {
+        data:Product
+        setData:any
+        post:any
+        processing:any
+        errors: BrandFormErrors
+    }
 
-
-    useEffect(() => {
-        console.log(data)
-    }, [data]);
     const onFinish = () => {
         const routeName =
             mode === "create" ? "admin.products.store" : "admin.products.update"
@@ -93,14 +118,13 @@ function ProductForm({ product, categories, brands }: ProductFormProps) {
         })
 
         inertiaMethod(url, {
-            data: formData,
             forceFormData: true,
             onSuccess: () => {
                 message.success(
                     `Product ${mode === "create" ? "created" : "updated"} successfully`
                 )
             },
-            onError: (e) => {
+            onError: (e:any) => {
                 message.error("An error occurred. Please check the form.")
                 console.error(e)
             },
@@ -158,7 +182,7 @@ function ProductForm({ product, categories, brands }: ProductFormProps) {
                                         </SelectTrigger>
                                         <SelectContent>
                                             {categories.map((c) => (
-                                                <SelectItem key={c.id} value={c.id}>
+                                                <SelectItem key={c.id} value={c.id as string}>
                                                     {c.name}
                                                 </SelectItem>
                                             ))}
@@ -240,7 +264,7 @@ function ProductForm({ product, categories, brands }: ProductFormProps) {
                                 <CardTitle>Specifications</CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <SpecificationsEditor specifications={data.specs} onChange={(specs) => setData("specs", specs)} />
+                                <SpecificationsEditor specifications={data.specs as any} onChange={(specs) => setData("specs", specs)} />
                             </CardContent>
                         </Card>
                     </TabsContent>

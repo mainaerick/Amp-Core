@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Link } from '@inertiajs/react';
 import { ArrowLeft } from 'lucide-react';
 
-function Create(props) {
+function Create() {
     return (
         <AdminLayout>
             <div className="flex flex-col gap-6">

@@ -6,7 +6,7 @@ export interface Specification {
 }
 
 export interface Product {
-    id: number
+    id: number|string
     name: string
     slug: string
     category_id: string

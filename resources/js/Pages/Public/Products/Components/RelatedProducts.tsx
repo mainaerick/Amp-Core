@@ -19,16 +19,16 @@ export default function RelatedProducts({ products }: RelatedProductsProps) {
                     <Card key={product.id} className="overflow-hidden">
                         <div className="relative h-48 w-full">
                             <img
-                                src={product.image || "/placeholder.svg"}
+                                src={product.images[0] || "/placeholder.svg"}
                                 alt={product.name}
 
                                 className="object-cover transition-transform hover:scale-105"
                             />
-                            {product.isNew && <Badge className="absolute top-2 right-2">New</Badge>}
+                            {product.is_new && <Badge className="absolute top-2 right-2">New</Badge>}
                         </div>
                         <CardContent className="p-4">
                             <h3 className="font-semibold text-lg">{product.name}</h3>
-                            <p className="text-sm text-muted-foreground capitalize">{product.category}</p>
+                            <p className="text-sm text-muted-foreground capitalize">{product.category_id}</p>
                         </CardContent>
                         <CardFooter className="p-4 pt-0">
                             <Button asChild variant="outline" className="w-full">

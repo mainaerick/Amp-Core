@@ -6,7 +6,7 @@ import { Search, Filter, Plus } from "lucide-react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Link } from '@inertiajs/react';
 import { DealersTable } from '@/Pages/Admin/Dealers/Components/DealersTable';
-function Index(props) {
+function Index() {
     return (
         <AdminLayout>
             <div className="flex flex-col gap-6">

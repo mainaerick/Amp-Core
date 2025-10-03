@@ -3,6 +3,7 @@ import { Button, Form, Input, Select, Space, message, Card, Upload } from 'antd'
 import { useForm } from '@inertiajs/react'
 import { UploadOutlined } from '@ant-design/icons'
 import { generateSlug } from '@/Pages/Admin/Categories/lib/actions';
+import { undefined } from 'zod';
 
 type CategoryFormProps = {
     mode: 'create' | 'edit'
@@ -10,21 +11,38 @@ type CategoryFormProps = {
 }
 
 const { TextArea } = Input
+interface CategoryFormData {
+    name: string | undefined
+    slug: string | undefined
+    logo?: string | undefined
+    logo_file?:any,
+    description?: string | undefined
+    status: 'active' | 'inactive' | undefined
+    _method:string,
+    [key: string]: any;}
+type BrandFormErrors = Partial<Record<keyof CategoryFormData, string>>
 
 const CategoryForm: React.FC<CategoryFormProps> = ({ mode, category }) => {
     const [form] = Form.useForm()
     const [messageApi, contextHolder] = message.useMessage()
 
-    const { data, setData, post, processing, errors } = useForm<any>({
+    const form_ = useForm<CategoryFormData>({
         name: category?.name || '',
         slug: category?.slug || '',
         description: category?.description || '',
         status: category?.status || 'active',
         logo: category?.logo || '',
-        logo_file: null,
-        _method: mode === 'edit' ? 'put' : post, // spoof PUT for Laravel
+        logo_file: undefined,
+        _method: mode === 'edit' ? 'put' : "post", // spoof PUT for Laravel
     })
 
+    const { data, setData, post, processing, errors } = form_ as typeof form_ & {
+        data:CategoryFormData
+        setData:any
+        post:any
+        processing:any
+        errors: BrandFormErrors
+    }
     const onFinish = () => {
         const routeName = mode === 'create' ? 'admin.categories.store' : 'admin.categories.update'
         const url = mode === "create" ? route(routeName) : route(routeName, category?.id as string)
@@ -49,12 +67,11 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ mode, category }) => {
         })
 
         inertiaMethod(url, {
-            data: formData,
             forceFormData: true,
             onSuccess: () => {
                 message.success(`Category ${mode === "create" ? "created" : "updated"} successfully`)
             },
-            onError: (e) => {
+            onError: (e:any) => {
                 message.error("An error occurred. Please check the form.")
                 console.error(e)
             },

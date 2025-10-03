@@ -10,16 +10,17 @@ import { Link, usePage } from '@inertiajs/react';
 import { ChevronRight } from 'lucide-react';
 import { Product } from '@/Pages/Admin/Products/Core/_models';
 
-export default function ProductPage() {
-    const { props } = usePage<{
-        product: Product;
-        relatedProducts: Product[];
-        category:Category
-    }>();
 
-    const { product, relatedProducts,category } = props;
+interface Props {
+    product:Product
+    relatedProducts:Product[]
+    category:Category
+}
+export default function ProductPage({product,
+                                        relatedProducts,
+                                        category}:Props) {
 
-    console.log(product)
+
     return (
         <Guest>
             <main className="container mx-auto min-h-screen px-4 py-8 md:py-12">

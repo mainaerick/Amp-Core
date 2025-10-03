@@ -9,8 +9,15 @@ import { Link, router } from '@inertiajs/react';
 import { ProductsTable } from '@/Pages/Admin/Products/Components/ProductsTable';
 import AdminLayout from '@/Layouts/AdminLayout';
 import MoreFilters from '@/Pages/Admin/Products/Components/MoreFilters';
+import { Product } from '@/Pages/Admin/Products/Core/_models';
 
-export default function Index({products,categories,filters}) {
+
+interface Props{
+    products:Product[]
+    categories:Category[]
+    filters:any
+}
+export default function Index({products,categories,filters}:Props) {
     const handleFilterChange = (key: string, value: any) => {
         router.get(
             route("admin.products.index"),
@@ -36,8 +43,10 @@ export default function Index({products,categories,filters}) {
                     <Input.Search
                         placeholder="Search products..."
                         defaultValue={filters.search}
-                        onPressEnter={(e) => handleFilterChange("search", e.target.value)}
-                        onClear={(e) => handleFilterChange("search", undefined)}
+                        onPressEnter={(e: React.KeyboardEvent<HTMLInputElement>) => {
+                            handleFilterChange("search", e.currentTarget.value)
+                        }}
+                        onClear={() => handleFilterChange("search", undefined)}
                         allowClear
                     />
                 </div>
@@ -74,7 +83,7 @@ export default function Index({products,categories,filters}) {
                 </div>
             </div>
 
-            <ProductsTable paginated_data={products}/>
+            <ProductsTable paginated_data={products} passed_params={filters}/>
         </div>
         </AdminLayout>
     )

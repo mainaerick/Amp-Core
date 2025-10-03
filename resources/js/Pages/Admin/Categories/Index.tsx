@@ -5,7 +5,11 @@ import { Plus, Search, Filter } from "lucide-react";
 import { CategoriesTable } from '@/Pages/Admin/Categories/Components/CategoriesTable';
 import AdminLayout from '@/Layouts/AdminLayout';
 
-function Index({ auth, categories, filters }) {
+interface Props {
+    categories:any
+    filters:any
+}
+function Index({  categories, filters }:Props) {
     const handleFilterChange = (key: string, value: any) => {
         router.get(
             route("admin.categories.index"),
@@ -52,7 +56,7 @@ function Index({ auth, categories, filters }) {
                         </div>
                     </div>
                 </div>
-                <CategoriesTable data={categories.data} />
+                <CategoriesTable data={categories.data as Category[]} />
             </div>
         </AdminLayout>
     );

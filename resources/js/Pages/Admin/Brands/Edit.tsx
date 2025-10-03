@@ -4,9 +4,12 @@ import AdminLayout from '@/Layouts/AdminLayout';
 import { Button } from '@/components/ui/button';
 import { Link } from '@inertiajs/react';
 import { ArrowLeft } from 'lucide-react';
+import { Brand } from '@/Pages/Admin/Brands/Core/types';
 
-function Edit({brand}) {
-    console.log(brand);
+interface Props {
+    brand:Brand
+}
+function Edit({brand}:Props) {
     return (
         <AdminLayout>
             <div className="flex flex-col gap-6">

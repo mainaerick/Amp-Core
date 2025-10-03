@@ -46,7 +46,9 @@ export default function Show({ category, products, availableBrands,filters }: Pr
                 {/* Heading + Sort */}
                 <div className="flex flex-col md:flex-row justify-between items-start mb-8">
                     <h1 className="text-3xl font-bold">{category.name}</h1>
-                    <ProductSort value={filters.sort} onChange={handleSortChange} />
+                    <ProductSort
+                        // value={filters.sort} onChange={handleSortChange}
+                    />
                 </div>
 
                 {/* Filters + Product Grid */}

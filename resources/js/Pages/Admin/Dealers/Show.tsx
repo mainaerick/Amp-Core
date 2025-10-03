@@ -1,6 +1,6 @@
 import React from 'react';
 
-function Show(props) {
+function Show() {
     return (
         <div>show</div>
     );

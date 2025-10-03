@@ -167,7 +167,7 @@ export function CategoriesTable({data}:Props) {
             rowSelection,
         },
     })
-    const handleDelete = (id) => {
+    const handleDelete = (id:string) => {
         if (window.confirm('Are you sure you want to delete this category?')) {
             router.delete(route('admin.categories.destroy', id), {
                 onSuccess: () => {
@@ -202,7 +202,7 @@ export function CategoriesTable({data}:Props) {
         if (selectedIds.length === 0) return
 
         const params = new URLSearchParams();
-        selectedIds.forEach((id) => params.append("ids[]", id));
+        selectedIds.forEach((id) => params.append("ids[]", id as string));
 
         window.location.href = route("admin.categories.bulkExport") + "?" + params.toString();
     }
