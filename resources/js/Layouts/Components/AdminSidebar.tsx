@@ -1,8 +1,14 @@
 "use client"
 
-import { BarChart, Package, Settings, Layers, Home, LogOut, MapPin, MessageSquare } from "lucide-react"
-
-
+import {
+    BarChart,
+    Package,
+    Settings,
+    Layers,
+    Home,
+    LogOut,
+    MapPin,
+} from "lucide-react"
 import {
     Sidebar,
     SidebarContent,
@@ -14,97 +20,118 @@ import {
     SidebarRail,
     SidebarSeparator,
 } from "@/components/ui/sidebar"
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from "@inertiajs/react"
+import { cn } from "@/lib/utils"
 
 export function AdminSidebar() {
-    const pathname = ""
+    const { url } = usePage() // works with Inertia
+    const pathname = url || ""
 
-    const isActive = (path: string) => {
-        return pathname === path || pathname?.startsWith(`${path}/`)
-    }
+    const isActive = (path: string) =>
+        pathname === path || pathname.startsWith(`${path}/`)
 
     return (
-        <Sidebar>
-            <SidebarHeader className="flex h-14 items-center px-4">
-                <Link href="/admin" className="flex items-center gap-2 font-bold">
-                    <Package className="h-6 w-6" />
+        <Sidebar className="border-r bg-white dark:bg-gray-900 dark:border-gray-800">
+            {/* Header / Logo */}
+            <SidebarHeader className="flex h-16 items-center border-b border-gray-100 px-4 dark:border-gray-800">
+                <Link
+                    href="/admin"
+                    className="flex items-center gap-2 font-semibold text-gray-800 dark:text-gray-100"
+                >
+                    <Package className="h-6 w-6 text-indigo-600" />
                     <span>Audio Gear Admin</span>
                 </Link>
             </SidebarHeader>
-            <SidebarSeparator />
+
             <SidebarContent>
-                <SidebarMenu>
-                    <SidebarMenuItem>
-                        <SidebarMenuButton asChild isActive={isActive("/admin")}>
-                            <Link href="/admin/dashboard">
-                                <BarChart className="h-4 w-4" />
-                                <span>Dashboard</span>
-                            </Link>
-                        </SidebarMenuButton>
-                    </SidebarMenuItem>
-                    <SidebarMenuItem>
-                        <SidebarMenuButton asChild isActive={isActive("/admin/products")}>
-                            <Link href="/admin/products">
-                                <Package className="h-4 w-4" />
-                                <span>Products</span>
-                            </Link>
-                        </SidebarMenuButton>
-                    </SidebarMenuItem>
-                    <SidebarMenuItem>
-                        <SidebarMenuButton asChild isActive={isActive("/admin/categories")}>
-                            <Link href="/admin/categories">
-                                <Layers className="h-4 w-4" />
-                                <span>Categories</span>
-                            </Link>
-                        </SidebarMenuButton>
-                    </SidebarMenuItem>
-                    <SidebarMenuItem>
-                        <SidebarMenuButton asChild isActive={isActive("/admin/dealers")}>
-                            <Link href="/admin/brands">
-                                <MapPin className="h-4 w-4" />
-                                <span>Brands</span>
-                            </Link>
-                        </SidebarMenuButton>
-                    </SidebarMenuItem>
-                    {/*<SidebarMenuItem>*/}
-                    {/*    <SidebarMenuButton asChild isActive={isActive("/admin/inquiries")}>*/}
-                    {/*        <Link href="/admin/inquiries">*/}
-                    {/*            <MessageSquare className="h-4 w-4" />*/}
-                    {/*            <span>Inquiries</span>*/}
-                    {/*        </Link>*/}
-                    {/*    </SidebarMenuButton>*/}
-                    {/*</SidebarMenuItem>*/}
-                    <SidebarMenuItem>
-                        <SidebarMenuButton asChild isActive={isActive("/admin/settings")}>
-                            <Link href="/admin/settings">
-                                <Settings className="h-4 w-4" />
-                                <span>Settings</span>
-                            </Link>
-                        </SidebarMenuButton>
-                    </SidebarMenuItem>
+                <SidebarMenu className="mt-4 space-y-1">
+                    {[
+                        {
+                            href: "/admin/dashboard",
+                            icon: BarChart,
+                            label: "Dashboard",
+                        },
+                        {
+                            href: "/admin/products",
+                            icon: Package,
+                            label: "Products",
+                        },
+                        {
+                            href: "/admin/categories",
+                            icon: Layers,
+                            label: "Categories",
+                        },
+                        {
+                            href: "/admin/brands",
+                            icon: MapPin,
+                            label: "Brands",
+                        },
+                        {
+                            href: "/admin/settings",
+                            icon: Settings,
+                            label: "Settings",
+                        },
+                    ].map(({ href, icon: Icon, label }) => (
+                        <SidebarMenuItem key={href}>
+                            <SidebarMenuButton asChild isActive={isActive(href)}>
+                                <Link
+                                    href={href}
+                                    className={cn(
+                                        "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-150",
+                                        isActive(href)
+                                            ? "bg-indigo-50 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300"
+                                            : "text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
+                                    )}
+                                >
+                                    <Icon
+                                        className={cn(
+                                            "h-4 w-4",
+                                            isActive(href)
+                                                ? "text-indigo-600 dark:text-indigo-300"
+                                                : "text-gray-500 dark:text-gray-400"
+                                        )}
+                                    />
+                                    <span>{label}</span>
+                                </Link>
+                            </SidebarMenuButton>
+                        </SidebarMenuItem>
+                    ))}
                 </SidebarMenu>
             </SidebarContent>
-            <SidebarSeparator />
+
+            <SidebarSeparator className="my-4" />
+
+            {/* Footer */}
             <SidebarFooter>
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <SidebarMenuButton asChild>
-                            <Link href="/">
-                                <Home className="h-4 w-4" />
+                            <Link
+                                href="/"
+                                className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
+                            >
+                                <Home className="h-4 w-4 text-gray-500 dark:text-gray-400" />
                                 <span>View Store</span>
                             </Link>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
+
                     <SidebarMenuItem>
                         <SidebarMenuButton asChild>
-                            <Link href="/auth/logout">
-                                <LogOut className="h-4 w-4" />
+                            <Link
+                                href="/auth/logout"
+                                method="post"
+                                as="button"
+                                className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
+                            >
+                                <LogOut className="h-4 w-4 text-red-500" />
                                 <span>Logout</span>
                             </Link>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
                 </SidebarMenu>
             </SidebarFooter>
+
             <SidebarRail />
         </Sidebar>
     )
