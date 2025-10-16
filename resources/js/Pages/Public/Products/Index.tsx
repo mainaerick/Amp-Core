@@ -1,5 +1,5 @@
 import Guest from "@/Layouts/GuestLayout"
-import { Link, router } from "@inertiajs/react"
+import { Head, Link, router } from '@inertiajs/react';
 import { Pagination, Select, Input } from "antd"
 import ProductGrid from "@/Pages/Public/Products/Components/ProductGrid"
 import FilterSidebar from "@/Pages/Public/Products/Components/FilterSidebar"
@@ -38,6 +38,7 @@ export default function Index({ products, filters, categories, brands }: Props) 
 
     return (
         <Guest>
+            <Head title="Products" />
             <main className="container mx-auto px-4 py-8 md:py-12 min-h-screen">
                 <div className="flex flex-col md:flex-row justify-between items-start mb-8">
                     <h1 className="text-3xl font-bold tracking-tight mb-4 md:mb-0">

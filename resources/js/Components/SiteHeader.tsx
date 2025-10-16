@@ -1,71 +1,115 @@
-import { useState } from "react"
-import { Menu, X, Search, ShoppingBag, Moon } from 'lucide-react';
-import { Button, Drawer, Input, Grid, Space } from "antd"
+import { useState, useEffect } from "react"
+import { Search, Moon, Sun } from "lucide-react"
+import { Button, Drawer, Input, Grid } from "antd"
 import { Link } from "@inertiajs/react"
-
-
 
 const { useBreakpoint } = Grid
 
 export default function SiteHeader() {
-    const [isMenuOpen, setIsMenuOpen] = useState(false)
     const [isSearchOpen, setIsSearchOpen] = useState(false)
-
-    const toggleMenu = () => setIsMenuOpen(!isMenuOpen)
-    const closeMenu = () => setIsMenuOpen(false)
+    const [isDark, setIsDark] = useState(false)
+    const screens = useBreakpoint()
 
     const navLinks = [
-        { label: "Speakers", href: "/speakers" },
-        { label: "Subwoofers", href: "/subwoofers" },
-        { label: "Amplifiers", href: "/amplifiers" },
-        { label: "Accessories", href: "/accessories" },
-        { label: "Car Audio & Video", href: "/car-audio" },
+        { label: "Speakers", href: "/categories/speakers" },
+        { label: "Subwoofers", href: "/categories/subwoofers" },
+        { label: "Amplifiers", href: "/categories/amplifiers" },
+        { label: "Accessories", href: "/categories/accessories" },
+        { label: "Car Audio & Video", href: "/categories/car-audio" },
     ]
 
-    return (
-        <header className="sticky top-0 z-50 w-full border-b bg-white dark:bg-black/80 dark:border-gray-800 shadow-sm">
-            <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-                <div className="flex items-center gap-6">
-                    <Link href="/" className="font-bold text-xl text-primary" onClick={closeMenu}>
-                        AMPCORE
-                    </Link>
-                </div>
+    // Toggle dark mode
+    const toggleDarkMode = () => {
+        const newMode = !isDark
+        setIsDark(newMode)
+        document.documentElement.classList.toggle("dark", newMode)
+        localStorage.setItem("theme", newMode ? "dark" : "light")
+    }
 
-                <div className="flex items-center gap-2">
+    // Load persisted theme
+    useEffect(() => {
+        const savedTheme = localStorage.getItem("theme")
+        if (savedTheme === "dark") {
+            setIsDark(true)
+            document.documentElement.classList.add("dark")
+        }
+    }, [])
+
+    return (
+        <header className="sticky top-0 z-50 w-full border-b bg-white dark:bg-black/80 dark:border-gray-800 shadow-sm transition-colors duration-300">
+            <div className="mx-auto flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
+                {/* Logo */}
+                <Link
+                    href="/"
+                    className="font-bold text-xl text-indigo-600 dark:text-indigo-400 tracking-tight"
+                    aria-label="Home"
+                >
+                    AMPCORE
+                </Link>
+
+                {/* Desktop Navigation */}
+                {screens.md && (
+                    <nav className="flex gap-6">
+                        {navLinks.map((link) => (
+                            <Link
+                                key={link.href}
+                                href={link.href}
+                                className="text-gray-700 hover:text-indigo-600 dark:text-gray-300 dark:hover:text-indigo-400 transition-colors"
+                            >
+                                {link.label}
+                            </Link>
+                        ))}
+                    </nav>
+                )}
+
+                {/* Action Buttons */}
+                <div className="flex items-center gap-3">
+                    {/* Search Button */}
                     <Button
                         type="text"
+                        className="!text-gray-700 dark:!text-gray-200 hover:!text-indigo-600 dark:hover:!text-indigo-400"
                         icon={<Search className="h-5 w-5" />}
                         onClick={() => setIsSearchOpen(true)}
-                        aria-label="Search"
+                        aria-label="Search products"
                     />
 
+                    {/* Dark Mode Toggle */}
                     <Button
                         type="text"
-                        icon={<Moon className="h-5 w-5" />}
-                        onClick={() => setIsSearchOpen(true)}
-                        aria-label="Search"
+                        className="!text-gray-700 dark:!text-gray-200 hover:!text-indigo-600 dark:hover:!text-indigo-400"
+                        icon={
+                            isDark ? (
+                                <Sun className="h-5 w-5 text-yellow-400" />
+                            ) : (
+                                <Moon className="h-5 w-5" />
+                            )
+                        }
+                        onClick={toggleDarkMode}
+                        aria-label="Toggle dark mode"
                     />
-
                 </div>
             </div>
 
-
-
-            {/* Top Search Drawer */}
+            {/* Search Drawer */}
             <Drawer
                 placement="top"
                 closable={false}
                 onClose={() => setIsSearchOpen(false)}
                 open={isSearchOpen}
                 height={100}
+                bodyStyle={{
+                    backgroundColor: isDark ? "#0a0a0a" : "#fff",
+                    paddingTop: "1rem",
+                }}
             >
-                <div className="mx-auto max-w-xl pt-4">
+                <div className="mx-auto max-w-xl">
                     <Input.Search
                         placeholder="Search for products..."
                         size="large"
                         enterButton
                         autoFocus
                         onSearch={() => setIsSearchOpen(false)}
+                        className="dark:[&_input]:bg-gray-900 dark:[&_input]:text-gray-100 dark:[&_input]:border-gray-700"
                     />
                 </div>
             </Drawer>

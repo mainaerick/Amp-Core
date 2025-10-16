@@ -6,7 +6,7 @@ import { Button, Image } from 'antd';
 import CategoryNavigation from '@/Pages/Public/Home/Components/CategoryNavigation';
 import FeaturedProducts from '@/Pages/Public/Home/Components/FeaturedProducts';
 import { ArrowRight } from 'lucide-react';
-import { Link } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 import { ArrowRightOutlined } from '@ant-design/icons';
 import FeaturedBrands from '@/Pages/Public/Home/Components/FeaturedBrands';
 import { Brand } from '@/Pages/Admin/Brands/Core/types';
@@ -21,6 +21,7 @@ function Index({ categories, featured_products, brands }: Props) {
 
     return (
         <Guest>
+            <Head title="Home" />
             <HeroSlider />
 
             {/* Categories */}

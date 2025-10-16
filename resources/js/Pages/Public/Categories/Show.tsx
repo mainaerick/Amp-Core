@@ -1,5 +1,5 @@
 import React from "react"
-import { Link, router } from "@inertiajs/react"
+import { Head, Link, router } from '@inertiajs/react';
 import { ChevronRight } from "lucide-react"
 import Guest from "@/Layouts/GuestLayout"
 import ProductSort from "@/Pages/Public/Products/Components/ProductSort"
@@ -33,6 +33,7 @@ export default function Show({ category, products, availableBrands,filters }: Pr
     }
     return (
         <Guest>
+            <Head title={category.name} />
             <main className="container mx-auto px-4 py-8 md:py-12 min-h-screen">
                 {/* Breadcrumbs */}
                 <div className="flex items-center text-sm mb-6">

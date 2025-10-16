@@ -6,7 +6,7 @@ import ProductGallery from '@/Pages/Public/Products/Components/ProductGallery';
 import ProductSpecs from '@/Pages/Public/Products/Components/ProductSpecs';
 import RelatedProducts from '@/Pages/Public/Products/Components/RelatedProducts';
 import WhereToBuy from '@/Pages/Public/Products/Components/WhereToBuy';
-import { Link, usePage } from '@inertiajs/react';
+import { Head, Link, usePage } from '@inertiajs/react';
 import { ChevronRight } from 'lucide-react';
 import { Product } from '@/Pages/Admin/Products/Core/_models';
 
@@ -23,6 +23,7 @@ export default function ProductPage({product,
 
     return (
         <Guest>
+            <Head title={product.name} />
             <main className="container mx-auto min-h-screen px-4 py-8 md:py-12">
                 {/* Breadcrumb */}
                 <div className="mb-6 flex items-center text-sm">
