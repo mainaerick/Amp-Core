@@ -12,14 +12,14 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 
 export function AdminHeader() {
+    const { app } = usePage().props as any;
+
     return (
         <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:px-6">
             <SidebarTrigger />
-
-
 
             <div className="flex flex-1 items-center justify-end gap-4">
                 <DropdownMenu>

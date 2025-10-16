@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
 import { Search, Moon, Sun } from "lucide-react"
 import { Button, Drawer, Input, Grid } from "antd"
-import { Link } from "@inertiajs/react"
+import { Link, usePage } from '@inertiajs/react';
 
 const { useBreakpoint } = Grid
 
@@ -9,7 +9,7 @@ export default function SiteHeader() {
     const [isSearchOpen, setIsSearchOpen] = useState(false)
     const [isDark, setIsDark] = useState(false)
     const screens = useBreakpoint()
-
+    const { app } = usePage().props as any;
     const navLinks = [
         { label: "Speakers", href: "/categories/speakers" },
         { label: "Subwoofers", href: "/categories/subwoofers" },
@@ -35,6 +35,9 @@ export default function SiteHeader() {
         }
     }, [])
 
+    useEffect(() => {
+        console.log(app)
+    }, [app]);
     return (
         <header className="sticky top-0 z-50 w-full border-b bg-white dark:bg-black/80 dark:border-gray-800 shadow-sm transition-colors duration-300">
             <div className="mx-auto flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
@@ -44,7 +47,7 @@ export default function SiteHeader() {
                     className="font-bold text-xl text-indigo-600 dark:text-indigo-400 tracking-tight"
                     aria-label="Home"
                 >
-                    AMPCORE
+                    {app.name}
                 </Link>
 
                 {/* Desktop Navigation */}

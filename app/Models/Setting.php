@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Cache;
 
 class Setting extends Model
 {
@@ -37,5 +38,11 @@ class Setting extends Model
     public static function resetSection(string $section): void
     {
         self::where('section', $section)->delete();
+    }
+    public static function get(string $key, $default = null)
+    {
+        return Cache::rememberForever("setting_{$key}", function () use ($key, $default) {
+            return self::where('key', $key)->value('value') ?? $default;
+        });
     }
 }

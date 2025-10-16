@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Setting;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 use Tighten\Ziggy\Ziggy;
@@ -32,6 +33,12 @@ class HandleInertiaRequests extends Middleware
     {
         return [
             ...parent::share($request),
+            'app' => [
+                'name' => Setting::get('storeName', config('app.name')),
+                'logo' => Setting::get('site_logo'),
+                'contact_email' => Setting::get('contact_email'),
+                'store_currency' => Setting::get('store_currency', 'USD'),
+            ],
             'auth' => [
                 'user' => $request->user(),
             ],

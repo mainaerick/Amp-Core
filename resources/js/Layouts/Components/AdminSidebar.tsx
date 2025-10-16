@@ -26,6 +26,7 @@ import { cn } from "@/lib/utils"
 export function AdminSidebar() {
     const { url } = usePage()
     const pathname = url || ""
+    const { app } = usePage().props as any;
 
     const isActive = (path: string) =>
         pathname === path || pathname.startsWith(`${path}/`)
@@ -33,13 +34,13 @@ export function AdminSidebar() {
     return (
         <Sidebar className="border-r bg-white dark:bg-gray-900 dark:border-gray-800">
             {/* Header */}
-            <SidebarHeader className="flex h-20 items-center border-b border-gray-100 px-6 dark:border-gray-800">
+            <SidebarHeader className="flex h-14 items-center border-b border-gray-100 px-6 dark:border-gray-800">
                 <Link
                     href="/admin"
                     className="flex items-center gap-3 font-semibold text-lg text-gray-800 dark:text-gray-100"
                 >
                     <Package className="h-7 w-7 text-indigo-600" />
-                    <span>Audio Gear Admin</span>
+                    <span>{app.name}</span>
                 </Link>
             </SidebarHeader>
 
