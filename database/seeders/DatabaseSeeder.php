@@ -42,8 +42,8 @@ class DatabaseSeeder extends Seeder
         ]);
         Dealer::factory(5)->create();
         Brand::factory()->count(5)->create();
-        ProductImage::truncate();
-        Product::truncate();
+//        ProductImage::truncate();
+//        Product::truncate();
         Product::factory()->count(20)->hasImages(ProductImage::factory()->count(3))->create();
         Setting::setSection('general', [
             'storeName' => 'SoundWave Audio',

@@ -9,7 +9,7 @@ const slides = [
         title: "Experience Sound Perfection",
         description: "Discover our new line of premium speakers designed for audiophiles",
         image: "https://plus.unsplash.com/premium_photo-1681400648913-ed4da66955dd?auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8d29vZmVyfGVufDB8fDB8fHww",
-        link: "/speakers",
+        link: "/categories/speakers",
         buttonText: "Shop Speakers",
     },
     {
@@ -17,7 +17,7 @@ const slides = [
         title: "Feel the Bass",
         description: "Powerful subwoofers that deliver deep, accurate bass response",
         image: "https://plus.unsplash.com/premium_photo-1681400648913-ed4da66955dd?auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8d29vZmVyfGVufDB8fDB8fHww",
-        link: "/subwoofers",
+        link: "/categories/subwoofers",
         buttonText: "Shop Subwoofers",
     },
     {
@@ -25,7 +25,7 @@ const slides = [
         title: "Drive with Premium Sound",
         description: "Transform your vehicle with our car audio solutions",
         image: "https://plus.unsplash.com/premium_photo-1681400648913-ed4da66955dd?auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8d29vZmVyfGVufDB8fDB8fHww",
-        link: "/car-audio",
+        link: "/categories/car-audio",
         buttonText: "Explore Car Audio",
     },
 ]
