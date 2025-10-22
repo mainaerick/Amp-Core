@@ -6,8 +6,8 @@ on:
   workflow_dispatch:
 
 env:
-  NODE_VERSION: '20'
-  PHP_VERSION: '8.3'
+  NODE_VERSION: '22'
+  PHP_VERSION: '8.4'
   SERVER_IP: ${{ secrets.SERVER_IP }}
   SERVER_PATH: ${{ secrets.SERVER_PATH }}
   REMOTE_USER: ${{ secrets.REMOTE_USER }}
@@ -38,8 +38,14 @@ jobs:
         with:
           php-version: ${{ env.PHP_VERSION }}
           extensions: dom, curl, mbstring, pdo_mysql, redis
+          coverage: none
 
-      - name: Install Composer deps
+      - name: Copy env and generate key
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+
+      - name: Install Composer dependencies
         run: composer install --prefer-dist --no-interaction --no-progress
 
       - name: Setup Node.js
@@ -48,26 +54,14 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
 
-      - run: npm ci
-
-      - name: Prepare Laravel
-        run: |
-          cp .env.example .env
-          php artisan key:generate
-
-      - name: Install Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Install NPM dependencies
+      - name: Install Node dependencies
         run: npm ci
 
-      - name: Build Vite assets
-        run: npm run build
+      - name: Build frontend (for tests)
+        # Build frontend to satisfy tests that need Vite manifest
+        run: npm run build --if-present
 
       - name: Run Tests
-        run: php artisan test --parallel
         env:
           DB_CONNECTION: mysql
           DB_HOST: 127.0.0.1
@@ -75,6 +69,7 @@ jobs:
           DB_USERNAME: root
           DB_PASSWORD: password
           REDIS_HOST: 127.0.0.1
+        run: php artisan test --parallel
 
   build:
     name: Build Assets
@@ -88,8 +83,10 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
 
-      - run: npm ci
-      - name: Build frontend
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: Build frontend (Vite + SSR)
         env:
           ASSET_URL: ${{ env.ASSET_URL }}
           NODE_OPTIONS: '--max-old-space-size=4096'
@@ -119,14 +116,14 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Sync built assets
+      - name: Sync built assets to server
         run: |
           rsync -avz --delete --progress \
             public/build/ ${{ env.REMOTE_USER }}@${{ env.SERVER_IP }}:${{ env.SERVER_PATH }}/public/build/
           rsync -avz --delete --progress \
             bootstrap/ssr/ ${{ env.REMOTE_USER }}@${{ env.SERVER_IP }}:${{ env.SERVER_PATH }}/bootstrap/ssr/
 
-      - name: Run server post-deploy script
+      - name: Trigger post-deploy script
         run: ssh -o StrictHostKeyChecking=no ${{ env.REMOTE_USER }}@${{ env.SERVER_IP }} "bash ${{ env.SERVER_PATH }}/deploy/post-deploy.sh"
 
       - name: Health check
