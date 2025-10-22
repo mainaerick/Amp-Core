@@ -76,7 +76,7 @@ jobs:
         run: npm run test --if-present
 
   build:
-    name: Build Assets
+    name: Build Inertia + React Assets
     runs-on: ubuntu-latest
     needs: test
 
@@ -93,7 +93,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build production assets
+      - name: Build production assets (Vite + React + SSR)
         run: npm run build
         env:
           APP_URL: ${{ secrets.APP_URL }}
@@ -103,11 +103,17 @@ jobs:
       - name: Verify build output
         run: |
           if [ ! -d "public/build/assets" ]; then
-            echo "❌ Build failed - assets directory missing"
+            echo "❌ Build failed - client assets directory missing"
             exit 1
           fi
-          echo "✅ Build successful"
+          if [ ! -d "bootstrap/ssr" ]; then
+            echo "❌ Build failed - SSR directory missing"
+            exit 1
+          fi
+          echo "✅ Client-side build successful"
           ls -lah public/build/
+          echo "✅ SSR build successful"
+          ls -lah bootstrap/ssr/
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
@@ -119,7 +125,7 @@ jobs:
           retention-days: 1
 
   deploy:
-    name: Deploy to Production
+    name: Deploy to Production (Sail)
     runs-on: ubuntu-latest
     needs: build
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/production'
@@ -154,45 +160,61 @@ jobs:
             -e "ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no" \
             bootstrap/ssr/ ${{ secrets.REMOTE_USER }}@${{ secrets.SERVER_IP }}:${{ secrets.SERVER_PATH }}/bootstrap/ssr/
 
-      - name: Deploy application code
+      - name: Deploy application code and restart services
         run: |
           ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no \
             ${{ secrets.REMOTE_USER }}@${{ secrets.SERVER_IP }} << 'ENDSSH'
+            set -e
             cd ${{ secrets.SERVER_PATH }}
 
-            # Pull latest code
+            echo "📥 Pulling latest code..."
             git fetch origin
             git reset --hard origin/main
 
-            # Update dependencies if needed
-            docker compose exec -T laravel.test composer install --no-dev --optimize-autoloader --no-interaction
+            echo "📦 Installing Composer dependencies..."
+            ./vendor/bin/sail composer install --no-dev --optimize-autoloader --no-interaction
 
-            # Run migrations
-            docker compose exec -T laravel.test php artisan migrate --force
+            echo "🔄 Running database migrations..."
+            ./vendor/bin/sail artisan migrate --force
 
-            # Clear and cache
-            docker compose exec -T laravel.test php artisan optimize:clear
-            docker compose exec -T laravel.test php artisan config:cache
-            docker compose exec -T laravel.test php artisan route:cache
-            docker compose exec -T laravel.test php artisan view:cache
+            echo "🔗 Ensuring storage link exists..."
+            ./vendor/bin/sail artisan storage:link
 
-            # Restart queue workers if applicable
-            docker compose exec -T laravel.test php artisan queue:restart || true
+            echo "🧹 Clearing all caches..."
+            ./vendor/bin/sail artisan optimize:clear
+
+            echo "⚡ Caching configuration..."
+            ./vendor/bin/sail artisan config:cache
+            ./vendor/bin/sail artisan route:cache
+            ./vendor/bin/sail artisan view:cache
+
+            echo "🔄 Restarting queue workers..."
+            ./vendor/bin/sail artisan queue:restart || true
+
+            echo "🎯 Restarting Sail containers to pick up new assets..."
+            ./vendor/bin/sail down
+            ./vendor/bin/sail up -d
 
             echo "✅ Deployment completed successfully"
           ENDSSH
 
+      - name: Wait for containers to be ready
+        run: |
+          echo "⏳ Waiting for Sail containers to start..."
+          sleep 15
+
       - name: Health check
         run: |
           for i in {1..5}; do
-            if curl -f -s -o /dev/null -w "%{http_code}" ${{ secrets.APP_URL }} | grep -q "200"; then
-              echo "✅ Application is healthy"
+            STATUS=$(curl -f -s -o /dev/null -w "%{http_code}" ${{ secrets.APP_URL }} || echo "000")
+            if [ "$STATUS" = "200" ]; then
+              echo "✅ Application is healthy (HTTP $STATUS)"
               exit 0
             fi
-            echo "Waiting for application to respond... ($i/5)"
+            echo "⏳ Waiting for application to respond... ($i/5) - Status: $STATUS"
             sleep 10
           done
-          echo "❌ Health check failed"
+          echo "❌ Health check failed - application not responding"
           exit 1
 
       - name: Cleanup
@@ -209,8 +231,9 @@ jobs:
       - name: Send notification
         run: |
           if [ "${{ needs.deploy.result }}" == "success" ]; then
-            echo "✅ Deployment successful"
-            # Add Slack/Discord webhook here if needed
+            echo "✅ Deployment successful to production"
+            echo "🔗 URL: ${{ secrets.APP_URL }}"
           else
             echo "❌ Deployment failed"
+            echo "Check logs: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           fi
