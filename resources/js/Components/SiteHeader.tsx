@@ -11,7 +11,7 @@ export default function SiteHeader() {
     const screens = useBreakpoint()
     const { app } = usePage().props as any;
     const navLinks = [
-        { label: "Speakers", href: "/categories/speakers" },
+        { label: "Speakerss", href: "/categories/speakers" },
         { label: "Subwoofers", href: "/categories/subwoofers" },
         { label: "Amplifiers", href: "/categories/amplifiers" },
         { label: "Accessories", href: "/categories/accessories" },
