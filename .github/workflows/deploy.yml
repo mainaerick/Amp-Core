@@ -192,7 +192,7 @@ jobs:
             git reset --hard origin/main
 
             echo "📦 Installing Composer dependencies..."
-            ./vendor/bin/sail composer install --no-dev --optimize-autoloader --no-interaction
+            composer install --no-dev --optimize-autoloader --no-interaction
 
             echo "🔄 Running database migrations..."
             ./vendor/bin/sail artisan migrate --force
