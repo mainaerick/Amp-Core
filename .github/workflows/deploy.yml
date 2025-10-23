@@ -172,79 +172,66 @@ jobs:
 
       - name: Deploy assets to server
         run: |
-          rsync -avz --delete --progress \
+          rsync -avz --delete \
             -e "ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no" \
             public/build/ ${{ secrets.REMOTE_USER }}@${{ secrets.SERVER_IP }}:${{ secrets.SERVER_PATH }}/public/build/
 
-          rsync -avz --delete --progress \
+          rsync -avz --delete \
             -e "ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no" \
             bootstrap/ssr/ ${{ secrets.REMOTE_USER }}@${{ secrets.SERVER_IP }}:${{ secrets.SERVER_PATH }}/bootstrap/ssr/
 
-      - name: Deploy application code and restart services
+      - name: Deploy application and restart Sail
         run: |
-          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no \
-            ${{ secrets.REMOTE_USER }}@${{ secrets.SERVER_IP }} << 'ENDSSH'
-            set -e
-            cd ${{ secrets.SERVER_PATH }}
+          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no ${{ secrets.REMOTE_USER }}@${{ secrets.SERVER_IP }} << 'ENDSSH'
+          set -e
+          cd ${{ secrets.SERVER_PATH }}
 
-            echo "📥 Pulling latest code..."
-            git fetch origin
-            git reset --hard origin/main
+          echo "📥 Pulling latest code..."
+          git fetch origin
+          git reset --hard origin/main
 
+          echo "📦 Installing Composer dependencies..."
+          composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
 
-            echo "🐳 Starting/Restarting Sail containers..."
-            if [ -f "docker-compose.yml" ]; then
-                # Check if using docker-compose (v1) or docker compose (v2)
-                if command -v docker-compose &> /dev/null; then
-                    DOCKER_COMPOSE="docker-compose"
-                else
-                    DOCKER_COMPOSE="docker compose"
-                fi
+          # Ensure .env exists
+          if [ ! -f ".env" ]; then
+            echo "⚙️  Copying .env.example to .env"
+            cp .env.example .env
+          fi
 
-                echo "Using: $DOCKER_COMPOSE"
+          echo "🐳 Starting Sail containers..."
+          if [ -f "./vendor/bin/sail" ]; then
+            ./vendor/bin/sail down --remove-orphans || true
+            ./vendor/bin/sail up -d
+          else
+            echo "❌ Sail not found in vendor/bin!"
+            exit 1
+          fi
 
-                # Start or restart containers
-                if $DOCKER_COMPOSE ps | grep -q "Up"; then
-                    echo "Containers running, restarting..."
-                    $DOCKER_COMPOSE restart
-                else
-                    echo "Starting containers..."
-                    $DOCKER_COMPOSE up -d
-                fi
+          echo "⏳ Waiting for containers to be ready..."
+          sleep 15
 
-                echo "⏳ Waiting for containers to be ready..."
-                sleep 15
-            else
-                echo "⚠️  docker-compose.yml not found"
-                exit 1
-            fi
+          echo "🔄 Running database migrations..."
+          ./vendor/bin/sail artisan migrate --force
 
-            echo "📦 Installing Composer dependencies inside container..."
-            $DOCKER_COMPOSE exec -T laravel.test composer install --no-dev --optimize-autoloader --no-interaction
+          echo "🔗 Ensuring storage link exists..."
+          ./vendor/bin/sail artisan storage:link || true
 
-            echo "🔄 Running database migrations..."
-            $DOCKER_COMPOSE exec -T laravel.test php artisan migrate --force
+          echo "🧹 Clearing and caching config..."
+          ./vendor/bin/sail artisan optimize:clear
+          ./vendor/bin/sail artisan config:cache
+          ./vendor/bin/sail artisan route:cache
+          ./vendor/bin/sail artisan view:cache
 
-            echo "🔗 Ensuring storage link exists..."
-            $DOCKER_COMPOSE exec -T laravel.test php artisan storage:link || true
+          echo "🚀 Restarting queue workers..."
+          ./vendor/bin/sail artisan queue:restart || true
 
-            echo "🧹 Clearing all caches..."
-            $DOCKER_COMPOSE exec -T laravel.test php artisan optimize:clear
-
-            echo "⚡ Caching configuration..."
-            $DOCKER_COMPOSE exec -T laravel.test php artisan config:cache
-            $DOCKER_COMPOSE exec -T laravel.test php artisan route:cache
-            $DOCKER_COMPOSE exec -T laravel.test php artisan view:cache
-
-            echo "🔄 Restarting queue workers..."
-            $DOCKER_COMPOSE exec -T laravel.test php artisan queue:restart || true
-
-            echo "✅ Deployment completed successfully"
+          echo "✅ Deployment completed successfully!"
           ENDSSH
 
       - name: Wait for application to be ready
         run: |
-          echo "⏳ Giving application extra time to fully start..."
+          echo "⏳ Giving app time to fully boot..."
           sleep 10
 
       - name: Health check
@@ -255,7 +242,7 @@ jobs:
               echo "✅ Application is healthy (HTTP $STATUS)"
               exit 0
             fi
-            echo "⏳ Waiting for application to respond... ($i/5) - Status: $STATUS"
+            echo "⏳ Waiting for app to respond... ($i/5) - Status: $STATUS"
             sleep 10
           done
           echo "❌ Health check failed - application not responding"
