@@ -1,7 +1,7 @@
 import React, { useState } from "react"
 import { Button, Form, Input, Row, Col, notification } from "antd"
 import { SaveOutlined } from "@ant-design/icons"
-import { useForm } from "@inertiajs/react"
+import { router, useForm } from '@inertiajs/react';
 import AdminLayout from "@/Layouts/AdminLayout"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 
