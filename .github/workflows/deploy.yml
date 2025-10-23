@@ -191,6 +191,7 @@ jobs:
             git fetch origin
             git reset --hard origin/main
 
+
             echo "🐳 Starting/Restarting Sail containers..."
             if [ -f "docker-compose.yml" ]; then
                 # Check if using docker-compose (v1) or docker compose (v2)
