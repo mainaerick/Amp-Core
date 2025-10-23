@@ -194,11 +194,21 @@ jobs:
             echo "📦 Installing Composer dependencies..."
             composer install --no-dev --optimize-autoloader --no-interaction
 
+            echo "🐳 Starting/Restarting Sail containers..."
+            if [ -f "docker-compose.yml" ]; then
+                ./vendor/bin/sail down
+                ./vendor/bin/sail up -d
+                echo "⏳ Waiting for containers to be ready..."
+                sleep 10
+            else
+                echo "⚠️  docker-compose.yml not found - skipping container restart"
+            fi
+
             echo "🔄 Running database migrations..."
             ./vendor/bin/sail artisan migrate --force
 
             echo "🔗 Ensuring storage link exists..."
-            ./vendor/bin/sail artisan storage:link
+            ./vendor/bin/sail artisan storage:link || true
 
             echo "🧹 Clearing all caches..."
             ./vendor/bin/sail artisan optimize:clear
@@ -211,17 +221,13 @@ jobs:
             echo "🔄 Restarting queue workers..."
             ./vendor/bin/sail artisan queue:restart || true
 
-            echo "🎯 Restarting Sail containers to pick up new assets..."
-            ./vendor/bin/sail down
-            ./vendor/bin/sail up -d
-
             echo "✅ Deployment completed successfully"
           ENDSSH
 
-      - name: Wait for containers to be ready
+      - name: Wait for application to be ready
         run: |
-          echo "⏳ Waiting for Sail containers to start..."
-          sleep 15
+          echo "⏳ Giving application extra time to fully start..."
+          sleep 10
 
       - name: Health check
         run: |
