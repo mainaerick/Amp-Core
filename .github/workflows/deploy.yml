@@ -191,35 +191,52 @@ jobs:
             git fetch origin
             git reset --hard origin/main
 
-            echo "📦 Installing Composer dependencies..."
-            composer install --no-dev --optimize-autoloader --no-interaction
-
             echo "🐳 Starting/Restarting Sail containers..."
             if [ -f "docker-compose.yml" ]; then
-                ./vendor/bin/sail down
-                ./vendor/bin/sail up -d
+                # Check if using docker-compose (v1) or docker compose (v2)
+                if command -v docker-compose &> /dev/null; then
+                    DOCKER_COMPOSE="docker-compose"
+                else
+                    DOCKER_COMPOSE="docker compose"
+                fi
+
+                echo "Using: $DOCKER_COMPOSE"
+
+                # Start or restart containers
+                if $DOCKER_COMPOSE ps | grep -q "Up"; then
+                    echo "Containers running, restarting..."
+                    $DOCKER_COMPOSE restart
+                else
+                    echo "Starting containers..."
+                    $DOCKER_COMPOSE up -d
+                fi
+
                 echo "⏳ Waiting for containers to be ready..."
-                sleep 10
+                sleep 15
             else
-                echo "⚠️  docker-compose.yml not found - skipping container restart"
+                echo "⚠️  docker-compose.yml not found"
+                exit 1
             fi
 
+            echo "📦 Installing Composer dependencies inside container..."
+            $DOCKER_COMPOSE exec -T laravel.test composer install --no-dev --optimize-autoloader --no-interaction
+
             echo "🔄 Running database migrations..."
-            ./vendor/bin/sail artisan migrate --force
+            $DOCKER_COMPOSE exec -T laravel.test php artisan migrate --force
 
             echo "🔗 Ensuring storage link exists..."
-            ./vendor/bin/sail artisan storage:link || true
+            $DOCKER_COMPOSE exec -T laravel.test php artisan storage:link || true
 
             echo "🧹 Clearing all caches..."
-            ./vendor/bin/sail artisan optimize:clear
+            $DOCKER_COMPOSE exec -T laravel.test php artisan optimize:clear
 
             echo "⚡ Caching configuration..."
-            ./vendor/bin/sail artisan config:cache
-            ./vendor/bin/sail artisan route:cache
-            ./vendor/bin/sail artisan view:cache
+            $DOCKER_COMPOSE exec -T laravel.test php artisan config:cache
+            $DOCKER_COMPOSE exec -T laravel.test php artisan route:cache
+            $DOCKER_COMPOSE exec -T laravel.test php artisan view:cache
 
             echo "🔄 Restarting queue workers..."
-            ./vendor/bin/sail artisan queue:restart || true
+            $DOCKER_COMPOSE exec -T laravel.test php artisan queue:restart || true
 
             echo "✅ Deployment completed successfully"
           ENDSSH
