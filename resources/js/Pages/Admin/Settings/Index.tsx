@@ -78,6 +78,8 @@ const SettingsIndex: React.FC<SettingsProps> = ({ settings }) => {
                     message: "Settings Updated",
                     description: `${currentTab} settings updated successfully.`,
                 })
+                // Reload shared props to get fresh data
+                router.reload({ only: ['app'] })
             },
             onError: () => {
                 notification.error({
