@@ -145,7 +145,11 @@ export default function BrandForm({ brand, mode }: Props) {
                     {brand?.logo && !data.logo_file && (
                         <div className="mt-2">
                             <img
-                                src={`/storage/${brand.logo}`}
+                                src={brand.logo && brand.logo.includes("brand_images")
+                                    ? `/${brand.logo}`
+                                    : brand.logo
+                                        ? `/storage/${brand.logo}`
+                                        : "/placeholder.svg"}
                                 alt="Brand Logo"
                                 className="h-16"
                             />

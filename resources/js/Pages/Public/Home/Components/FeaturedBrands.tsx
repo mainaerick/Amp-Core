@@ -8,18 +8,24 @@ export default function FeaturedBrands({ brands }: Props) {
             {brands.map((brand) => (
                 <Card
                     key={brand.id}
-                    className="bg-gray-200"
-                    style={{ boxShadow: "none", textAlign: "center" }}
+                    className="flex items-center justify-center bg-gray-100 h-28 text-center shadow-none"
                 >
-
-                    <div style={{ width: "100%", height: "48px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <div className="flex items-center justify-center h-28 w-full p-2">
                         <img
-                            src={brand.logo ? `/storage/${brand.logo}` : "/placeholder.svg"}
+                            src={
+                                brand.logo && brand.logo.includes("brand_images")
+                                    ? `/${brand.logo}`
+                                    : brand.logo
+                                        ? `/storage/${brand.logo}`
+                                        : "/placeholder.svg"
+                            }
                             alt={brand.name}
-                            style={{ maxHeight: "48px", maxWidth: "100%", objectFit: "fill" }}
+                            className="max-h-full max-w-full object-contain"
                         />
                     </div>
                 </Card>
+
+
             ))}
         </div>
     )

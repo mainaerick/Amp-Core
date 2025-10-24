@@ -44,13 +44,13 @@ function Index({ categories, featured_products, brands }: Props) {
 
             {/* Featured Brands */}
             <section className="container mx-auto px-4 py-8 md:py-12">
-                <div className="flex flex-col md:flex-row justify-between items-center mb-8">
-                    <h2 className="text-3xl font-bold tracking-tight">Our Brands</h2>
-                    <Link href={"/brands"}>
-                        <Button type="default" size="large" icon={<ArrowRightOutlined />}>
-                            View All Brands
-                        </Button>
-                    </Link>
+                <div className="flex flex-col md:flex-row justify-start items-center mb-8">
+                    <h2 className="text-3xl font-bold tracking-tight">Brands</h2>
+                    {/*<Link href={"/brands"}>*/}
+                    {/*    <Button type="default" size="large" icon={<ArrowRightOutlined />}>*/}
+                    {/*        View All Brands*/}
+                    {/*    </Button>*/}
+                    {/*</Link>*/}
                 </div>
                 <FeaturedBrands brands={brands} />
             </section>

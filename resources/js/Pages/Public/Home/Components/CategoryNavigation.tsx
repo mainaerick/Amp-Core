@@ -15,7 +15,7 @@ export default function CategoryNavigation({ categories }: Props) {
                 >
                     <div className="absolute inset-0 w-full h-full">
                         <Image
-                            src={category.logo ? `/storage/${category.logo}` : "/placeholder.svg"}
+                            src={category.logo ? category.logo.toString().includes("category_images")?`${category.logo}`:`/storage/${category.logo}` : "/placeholder.svg"}
                             alt={category.name}
                             preview={false}
                             className="object-cover opacity-70 transition-transform group-hover:scale-110 group-hover:opacity-50"

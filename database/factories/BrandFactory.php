@@ -17,13 +17,39 @@ class BrandFactory extends Factory
      */
     public function definition(): array
     {
-        $name = $this->faker->company;
+        static $brands = [
+            [
+                'name' => 'Pioneer',
+                'logo' => 'brand_images/Pioneer-Logo.jpg',
+                'description' => 'Renowned for innovation and superior sound quality in audio systems.',
+            ],
+            [
+                'name' => 'JBL',
+                'logo' => 'brand_images/JBL-Logo.png',
+                'description' => 'Delivers bold, vibrant sound with iconic designs for all environments.',
+            ],
+            [
+                'name' => 'Kenwood',
+                'logo' => 'brand_images/Kenwood.png',
+                'description' => 'Known for precision engineering and high-performance car audio products.',
+            ],
+            [
+                'name' => 'Rockford',
+                'logo' => 'brand_images/Rockford.png',
+                'description' => 'Powerful audio solutions built for deep bass and unmatched clarity.',
+            ],
+        ];
+
+        static $index = 0;
+        $brand = $brands[$index % count($brands)];
+        $index++;
+
         return [
-            'id' => 'BRAND-' . $this->faker->unique()->numberBetween(1000, 9999),
-            'name' => $name,
-            'slug' => Str::slug($name),
-            'logo' => null,
-            'description' => $this->faker->sentence,
+            'id' => 'BRAND-' . $index,
+            'name' => $brand['name'],
+            'slug' => Str::slug($brand['name']),
+            'logo' => $brand['logo'],
+            'description' => $brand['description'],
             'status' => 'active',
         ];
     }

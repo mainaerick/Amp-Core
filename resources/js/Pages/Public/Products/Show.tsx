@@ -51,7 +51,7 @@ export default function ProductPage({product,
                 {/* Main product */}
                 <div className="mb-12 grid gap-12 md:grid-cols-2">
                     <ProductGallery
-                        images={product.images.map((img) => `/storage/${img.path}`)}
+                        images={product.images.map((img) => img.length > 0? `/storage/${img.path}`: '/placeholder.svg')}
                     />
 
                     <div>

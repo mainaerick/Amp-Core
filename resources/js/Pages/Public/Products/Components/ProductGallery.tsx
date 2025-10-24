@@ -38,20 +38,18 @@ export default function ProductGallery({ images }: ProductGalleryProps) {
                 <img
                     src={mainImage || "/placeholder.svg"}
                     alt="Product image"
-                    style={{height:600,width:600}}
-                    className="object-cover transition-transform group-hover:scale-105"
-
+                    loading="lazy"
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                 />
-                <Button
-                    variant="secondary"
-                    size="icon"
-                    className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity"
-                    onClick={() => setZoomOpen(true)}
-                >
+
+                <Button variant="secondary" size="icon"
+                        className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity"
+                        onClick={() => setZoomOpen(true)} >
                     <Maximize2 className="h-4 w-4" />
                     <span className="sr-only">Zoom image</span>
                 </Button>
             </div>
+
 
             <div className="grid grid-cols-4 gap-2">
                 {images.map((image, index) => (
