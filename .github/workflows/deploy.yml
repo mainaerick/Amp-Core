@@ -172,73 +172,82 @@ jobs:
 
       - name: Deploy assets to server
         run: |
-          rsync -avz --delete \
+          rsync -avz --delete --progress \
             -e "ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no" \
             public/build/ ${{ secrets.REMOTE_USER }}@${{ secrets.SERVER_IP }}:${{ secrets.SERVER_PATH }}/public/build/
 
-          rsync -avz --delete \
+          rsync -avz --delete --progress \
             -e "ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no" \
             bootstrap/ssr/ ${{ secrets.REMOTE_USER }}@${{ secrets.SERVER_IP }}:${{ secrets.SERVER_PATH }}/bootstrap/ssr/
 
-      - name: Deploy application and restart Sail
+      - name: Deploy application code and restart services
         run: |
-          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no ${{ secrets.REMOTE_USER }}@${{ secrets.SERVER_IP }} << 'ENDSSH'
-          set -e
-          cd ${{ secrets.SERVER_PATH }}
+          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no \
+            ${{ secrets.REMOTE_USER }}@${{ secrets.SERVER_IP }} << 'ENDSSH'
+            set -e
+            cd ${{ secrets.SERVER_PATH }}
 
-          echo "📥 Pulling latest code..."
-          git fetch origin
-          git reset --hard origin/main
+            echo "📥 Pulling latest code..."
+            git fetch origin
 
-      - name: Install Composer dependencies using Sail image
-        run: |
-          echo "📦 Installing Composer dependencies inside Sail image..."
-          docker run --rm \
-            -v $(pwd):/app \
-            -w /app \
-            laravelsail/php84-composer:latest \
-            composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
-      - name:  Prepare deployment package
-        run: |
-          # Ensure .env exists
-          if [ ! -f ".env" ]; then
-            echo "⚙️  Copying .env.example to .env"
-            cp .env.example .env
-          fi
+            # Don't reset vendor/ directory - we need it for Sail
+            git reset --hard origin/main
 
-          echo "🐳 Starting Sail containers..."
-          if [ -f "./vendor/bin/sail" ]; then
-            ./vendor/bin/sail down --remove-orphans || true
-            ./vendor/bin/sail up -d
-          else
-            echo "❌ Sail not found in vendor/bin!"
-            exit 1
-          fi
+            # If vendor doesn't exist, we need to bootstrap
+            if [ ! -d "vendor/laravel/sail" ]; then
+                echo "🔧 First-time setup: Installing dependencies on host..."
+                if command -v composer &> /dev/null; then
+                    composer install --ignore-platform-reqs --no-interaction
+                else
+                    echo "❌ Composer not found. Please run initial setup first."
+                    exit 1
+                fi
+            fi
 
-          echo "⏳ Waiting for containers to be ready..."
-          sleep 15
+            echo "🔧 Setting up environment variables..."
+            export WWWUSER=$(id -u)
+            export WWWGROUP=$(id -g)
 
-          echo "🔄 Running database migrations..."
-          ./vendor/bin/sail artisan migrate --force
+            echo "🐳 Detecting Docker Compose version..."
+            if command -v docker-compose &> /dev/null; then
+                DOCKER_COMPOSE="docker-compose"
+            else
+                DOCKER_COMPOSE="docker compose"
+            fi
+            echo "Using: $DOCKER_COMPOSE"
 
-          echo "🔗 Ensuring storage link exists..."
-          ./vendor/bin/sail artisan storage:link || true
+            echo "🔄 Starting containers (rebuilding if needed)..."
+            $DOCKER_COMPOSE up -d --build
 
-          echo "🧹 Clearing and caching config..."
-          ./vendor/bin/sail artisan optimize:clear
-          ./vendor/bin/sail artisan config:cache
-          ./vendor/bin/sail artisan route:cache
-          ./vendor/bin/sail artisan view:cache
+            echo "⏳ Waiting for containers to be ready..."
+            sleep 20
 
-          echo "🚀 Restarting queue workers..."
-          ./vendor/bin/sail artisan queue:restart || true
+            echo "📦 Installing Composer dependencies inside container..."
+            $DOCKER_COMPOSE exec -T laravel.test composer install --no-dev --optimize-autoloader --no-interaction
 
-          echo "✅ Deployment completed successfully!"
+            echo "🔄 Running database migrations..."
+            $DOCKER_COMPOSE exec -T laravel.test php artisan migrate --force
+
+            echo "🔗 Ensuring storage link exists..."
+            $DOCKER_COMPOSE exec -T laravel.test php artisan storage:link || true
+
+            echo "🧹 Clearing all caches..."
+            $DOCKER_COMPOSE exec -T laravel.test php artisan optimize:clear
+
+            echo "⚡ Caching configuration..."
+            $DOCKER_COMPOSE exec -T laravel.test php artisan config:cache
+            $DOCKER_COMPOSE exec -T laravel.test php artisan route:cache
+            $DOCKER_COMPOSE exec -T laravel.test php artisan view:cache
+
+            echo "🔄 Restarting queue workers..."
+            $DOCKER_COMPOSE exec -T laravel.test php artisan queue:restart || true
+
+            echo "✅ Deployment completed successfully"
           ENDSSH
 
       - name: Wait for application to be ready
         run: |
-          echo "⏳ Giving app time to fully boot..."
+          echo "⏳ Giving application extra time to fully start..."
           sleep 10
 
       - name: Health check
@@ -249,7 +258,7 @@ jobs:
               echo "✅ Application is healthy (HTTP $STATUS)"
               exit 0
             fi
-            echo "⏳ Waiting for app to respond... ($i/5) - Status: $STATUS"
+            echo "⏳ Waiting for application to respond... ($i/5) - Status: $STATUS"
             sleep 10
           done
           echo "❌ Health check failed - application not responding"
