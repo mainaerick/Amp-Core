@@ -224,7 +224,7 @@ jobs:
           sleep 25
 
           echo "📦 Installing production dependencies in container..."
-          ./vendor/bin/sail composer install --no-dev --optimize-autoloader --no-interaction
+          ./vendor/bin/sail composer install --optimize-autoloader --no-interaction
 
           echo "🔄 Running database migrations..."
           ./vendor/bin/sail artisan migrate --force
