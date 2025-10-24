@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
 import { Search, Moon, Sun } from "lucide-react"
 import { Button, Drawer, Input, Grid } from "antd"
-import { Link, usePage } from "@inertiajs/react"
+import { Link, router, usePage } from '@inertiajs/react';
 
 const { useBreakpoint } = Grid
 
@@ -117,7 +117,12 @@ export default function SiteHeader() {
                         size="large"
                         enterButton
                         autoFocus
-                        onSearch={() => setIsSearchOpen(false)}
+                        onSearch={(value) => {
+                            if (value.trim()) {
+                                router.visit(`/products?search=${encodeURIComponent(value.trim())}`)
+                            }
+                            setIsSearchOpen(false)
+                        }}
                         className="dark:[&_input]:bg-gray-900 dark:[&_input]:text-gray-100 dark:[&_input]:border-gray-700"
                     />
                 </div>

@@ -13,7 +13,19 @@ class ProductController extends Controller
     public function index(Request $request)
     {
 //        $query = Product::query()->with('category', 'brand');
-        $query = Product::with(['images','category', 'brand']);
+        $query = Product::with(['images', 'category', 'brand']);
+
+        // 🔹 Search
+        if ($request->filled('search')) {
+            $searchTerm = $request->search;
+            $query->where(function ($q) use ($searchTerm) {
+                $q->where('name', 'like', "%{$searchTerm}%")
+                    ->orWhere('description', 'like', "%{$searchTerm}%")
+                    ->orWhereHas('brand', fn($b) => $b->where('name', 'like', "%{$searchTerm}%"))
+                    ->orWhereHas('category', fn($c) => $c->where('name', 'like', "%{$searchTerm}%"));
+            });
+        }
+
         // 🔹 Filters
         if ($request->filled('category')) {
             $query->where('category_id', $request->category);
@@ -31,7 +43,7 @@ class ProductController extends Controller
             $query->whereBetween('price', [$request->min_price, $request->max_price]);
         }
 
-        // Sorting
+        // 🔹 Sorting
         switch ($request->get('sort')) {
             case 'price-asc':
                 $query->orderBy('price', 'asc');
