@@ -13,7 +13,7 @@ class ProductImageFactory extends Factory
     public function definition(): array
     {
         return [
-            'path' => 'products/' . $this->faker->unique()->lexify('image_????') . '.jpg',
+            'path' => '',
             'product_id' => Product::factory(), // will be overridden if attached via has()
         ];
     }

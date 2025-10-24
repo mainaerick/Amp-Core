@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Link } from '@inertiajs/react';
 import { Product } from '@/Pages/Admin/Products/Core/_models';
+import ProductCard from '@/Pages/Public/Products/Components/ProductCard';
 
 
 
@@ -16,26 +17,7 @@ export default function RelatedProducts({ products }: RelatedProductsProps) {
             <h2 className="text-2xl font-bold mb-6">Related Products</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {products.map((product) => (
-                    <Card key={product.id} className="overflow-hidden">
-                        <div className="relative h-48 w-full">
-                            <img
-                                src={product.images[0] || "/placeholder.svg"}
-                                alt={product.name}
-
-                                className="object-cover transition-transform hover:scale-105"
-                            />
-                            {product.is_new && <Badge className="absolute top-2 right-2">New</Badge>}
-                        </div>
-                        <CardContent className="p-4">
-                            <h3 className="font-semibold text-lg">{product.name}</h3>
-                            <p className="text-sm text-muted-foreground capitalize">{product.category_id}</p>
-                        </CardContent>
-                        <CardFooter className="p-4 pt-0">
-                            <Button asChild variant="outline" className="w-full">
-                                <Link href={`/products/${product.slug}`}>View Details</Link>
-                            </Button>
-                        </CardFooter>
-                    </Card>
+                    <ProductCard product={product}/>
                 ))}
             </div>
         </section>
