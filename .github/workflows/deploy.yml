@@ -194,14 +194,19 @@ jobs:
           export WWWUSER=$(id -u)
           export WWWGROUP=$(id -g)
 
-          echo "📦 Ensuring vendor exists for Sail..."
-          if [ ! -d "vendor/laravel/sail" ]; then
-              echo "Installing dependencies to get Sail files..."
-              if command -v composer &> /dev/null; then
-                  composer install --ignore-platform-reqs --no-interaction
-              else
-                  docker run --rm -v "$(pwd)":/app -w /app laravelsail/php83-composer:latest composer install --ignore-platform-reqs --no-interaction
-              fi
+          echo "📦 Installing Composer dependencies (always needed after git pull)..."
+          if command -v composer &> /dev/null; then
+              composer install --ignore-platform-reqs --no-interaction
+          else
+              echo "Using Docker to install..."
+              docker run --rm -v "$(pwd)":/app -w /app laravelsail/php83-composer:latest composer install --ignore-platform-reqs --no-interaction
+          fi
+
+          echo "✅ Verifying Sail is available..."
+          if [ ! -f "./vendor/bin/sail" ]; then
+              echo "❌ Sail not found in vendor/bin after composer install"
+              ls -la vendor/bin/ || echo "vendor/bin/ doesn't exist"
+              exit 1
           fi
 
           echo "⚙️  Ensuring .env exists..."
@@ -209,20 +214,14 @@ jobs:
               cp .env.example .env
           fi
 
-          echo "🐳 Managing containers with Sail..."
-          if [ -f "./vendor/bin/sail" ]; then
-              echo "Stopping existing containers..."
-              ./vendor/bin/sail down --remove-orphans || true
+          echo "🐳 Stopping existing containers..."
+          ./vendor/bin/sail down --remove-orphans || true
 
-              echo "Building and starting containers..."
-              ./vendor/bin/sail up -d --build
-          else
-              echo "❌ Sail not found after composer install"
-              exit 1
-          fi
+          echo "🚀 Building and starting containers..."
+          ./vendor/bin/sail up -d --build
 
           echo "⏳ Waiting for containers to be ready..."
-          sleep 20
+          sleep 25
 
           echo "📦 Installing production dependencies in container..."
           ./vendor/bin/sail composer install --no-dev --optimize-autoloader --no-interaction
