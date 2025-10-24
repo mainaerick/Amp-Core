@@ -178,6 +178,7 @@ const SettingsIndex: React.FC<SettingsProps> = ({ settings }) => {
                     </Form>
                 </TabsContent>
 
+
                 {/* Store and Contact tabs ... (similar to above, unchanged except typing works now) */}
             </Tabs>
         </AdminLayout>

@@ -62,7 +62,7 @@ export default function ProductPage({product,
 
                         <ProductFeatures features={product.features || []} />
                         <ProductDescription description={product.description} />
-                        <WhereToBuy />
+                        <WhereToBuy productName={product.name} />
                     </div>
                 </div>
 
