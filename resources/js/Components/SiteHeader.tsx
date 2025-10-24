@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
 import { Search, Moon, Sun } from "lucide-react"
 import { Button, Drawer, Input, Grid } from "antd"
-import { Link, usePage } from '@inertiajs/react';
+import { Link, usePage } from "@inertiajs/react"
 
 const { useBreakpoint } = Grid
 
@@ -9,7 +9,9 @@ export default function SiteHeader() {
     const [isSearchOpen, setIsSearchOpen] = useState(false)
     const [isDark, setIsDark] = useState(false)
     const screens = useBreakpoint()
-    const { app } = usePage().props as any;
+    const { url, props } = usePage()
+    const { app } = props as any
+
     const navLinks = [
         { label: "Speakers", href: "/categories/speakers" },
         { label: "Subwoofers", href: "/categories/subwoofers" },
@@ -35,9 +37,6 @@ export default function SiteHeader() {
         }
     }, [])
 
-    useEffect(() => {
-        console.log(app)
-    }, [app]);
     return (
         <header className="sticky top-0 z-50 w-full border-b bg-white dark:bg-black/80 dark:border-gray-800 shadow-sm transition-colors duration-300">
             <div className="mx-auto flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
@@ -47,21 +46,28 @@ export default function SiteHeader() {
                     className="font-bold text-xl text-indigo-600 dark:text-indigo-400 tracking-tight"
                     aria-label="Home"
                 >
-                    {app.name}
+                    {app?.name || "Audio Showcase"}
                 </Link>
 
                 {/* Desktop Navigation */}
                 {screens.md && (
                     <nav className="flex gap-6">
-                        {navLinks.map((link) => (
-                            <Link
-                                key={link.href}
-                                href={link.href}
-                                className="text-gray-700 hover:text-indigo-600 dark:text-gray-300 dark:hover:text-indigo-400 transition-colors"
-                            >
-                                {link.label}
-                            </Link>
-                        ))}
+                        {navLinks.map((link) => {
+                            const isActive = url.startsWith(link.href)
+                            return (
+                                <Link
+                                    key={link.href}
+                                    href={link.href}
+                                    className={`transition-colors ${
+                                        isActive
+                                            ? "text-indigo-600 dark:text-indigo-400 font-semibold border-b-2 border-indigo-600 dark:border-indigo-400 pb-1"
+                                            : "text-gray-700 hover:text-indigo-600 dark:text-gray-300 dark:hover:text-indigo-400"
+                                    }`}
+                                >
+                                    {link.label}
+                                </Link>
+                            )
+                        })}
                     </nav>
                 )}
 
