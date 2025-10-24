@@ -180,69 +180,70 @@ jobs:
             -e "ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no" \
             bootstrap/ssr/ ${{ secrets.REMOTE_USER }}@${{ secrets.SERVER_IP }}:${{ secrets.SERVER_PATH }}/bootstrap/ssr/
 
-      - name: Deploy application code and restart services
+      - name: Deploy application and restart Sail
         run: |
-          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no \
-            ${{ secrets.REMOTE_USER }}@${{ secrets.SERVER_IP }} << 'ENDSSH'
-            set -e
-            cd ${{ secrets.SERVER_PATH }}
+          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no ${{ secrets.REMOTE_USER }}@${{ secrets.SERVER_IP }} << 'ENDSSH'
+          set -e
+          cd ${{ secrets.SERVER_PATH }}
 
-            echo "📥 Pulling latest code..."
-            git fetch origin
+          echo "📥 Pulling latest code..."
+          git fetch origin
+          git reset --hard origin/main
 
-            # Don't reset vendor/ directory - we need it for Sail
-            git reset --hard origin/main
+          echo "🔧 Setting environment variables..."
+          export WWWUSER=$(id -u)
+          export WWWGROUP=$(id -g)
 
-            # If vendor doesn't exist, we need to bootstrap
-            if [ ! -d "vendor/laravel/sail" ]; then
-                echo "🔧 First-time setup: Installing dependencies on host..."
-                if command -v composer &> /dev/null; then
-                    composer install --ignore-platform-reqs --no-interaction
-                else
-                    echo "❌ Composer not found. Please run initial setup first."
-                    exit 1
-                fi
-            fi
+          echo "📦 Ensuring vendor exists for Sail..."
+          if [ ! -d "vendor/laravel/sail" ]; then
+              echo "Installing dependencies to get Sail files..."
+              if command -v composer &> /dev/null; then
+                  composer install --ignore-platform-reqs --no-interaction
+              else
+                  docker run --rm -v "$(pwd)":/app -w /app laravelsail/php83-composer:latest composer install --ignore-platform-reqs --no-interaction
+              fi
+          fi
 
-            echo "🔧 Setting up environment variables..."
-            export WWWUSER=$(id -u)
-            export WWWGROUP=$(id -g)
+          echo "⚙️  Ensuring .env exists..."
+          if [ ! -f ".env" ]; then
+              cp .env.example .env
+          fi
 
-            echo "🐳 Detecting Docker Compose version..."
-            if command -v docker-compose &> /dev/null; then
-                DOCKER_COMPOSE="docker-compose"
-            else
-                DOCKER_COMPOSE="docker compose"
-            fi
-            echo "Using: $DOCKER_COMPOSE"
+          echo "🐳 Managing containers with Sail..."
+          if [ -f "./vendor/bin/sail" ]; then
+              echo "Stopping existing containers..."
+              ./vendor/bin/sail down --remove-orphans || true
 
-            echo "🔄 Starting containers (rebuilding if needed)..."
-            $DOCKER_COMPOSE up -d --build
+              echo "Building and starting containers..."
+              ./vendor/bin/sail up -d --build
+          else
+              echo "❌ Sail not found after composer install"
+              exit 1
+          fi
 
-            echo "⏳ Waiting for containers to be ready..."
-            sleep 20
+          echo "⏳ Waiting for containers to be ready..."
+          sleep 20
 
-            echo "📦 Installing Composer dependencies inside container..."
-            $DOCKER_COMPOSE exec -T laravel.test composer install --no-dev --optimize-autoloader --no-interaction
+          echo "📦 Installing production dependencies in container..."
+          ./vendor/bin/sail composer install --no-dev --optimize-autoloader --no-interaction
 
-            echo "🔄 Running database migrations..."
-            $DOCKER_COMPOSE exec -T laravel.test php artisan migrate --force
+          echo "🔄 Running database migrations..."
+          ./vendor/bin/sail artisan migrate --force
 
-            echo "🔗 Ensuring storage link exists..."
-            $DOCKER_COMPOSE exec -T laravel.test php artisan storage:link || true
+          echo "🔗 Creating storage link..."
+          ./vendor/bin/sail artisan storage:link || true
 
-            echo "🧹 Clearing all caches..."
-            $DOCKER_COMPOSE exec -T laravel.test php artisan optimize:clear
+          echo "🧹 Optimizing application..."
+          ./vendor/bin/sail artisan optimize:clear
+          ./vendor/bin/sail artisan config:cache
+          ./vendor/bin/sail artisan route:cache
+          ./vendor/bin/sail artisan view:cache
 
-            echo "⚡ Caching configuration..."
-            $DOCKER_COMPOSE exec -T laravel.test php artisan config:cache
-            $DOCKER_COMPOSE exec -T laravel.test php artisan route:cache
-            $DOCKER_COMPOSE exec -T laravel.test php artisan view:cache
+          echo "🔄 Restarting queue workers..."
+          ./vendor/bin/sail artisan queue:restart || true
 
-            echo "🔄 Restarting queue workers..."
-            $DOCKER_COMPOSE exec -T laravel.test php artisan queue:restart || true
-
-            echo "✅ Deployment completed successfully"
+          echo "✅ Deployment complete!"
+          ./vendor/bin/sail ps
           ENDSSH
 
       - name: Wait for application to be ready
