@@ -53,8 +53,8 @@ class DatabaseSeeder extends Seeder
 
         Setting::setSection('contact', [
             'email' => 'support@ampcore.com',
-            'phone' => '+254740212762',
-            'whatsapp' => '+254740212762',
+            'phone' => '+254722122223',
+            'whatsapp' => '+254722122223',
             'mapEmbed'=>'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d4731.523926883942!2d36.82348817569007!3d-1.2849487356261509!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x182f116041c8127d%3A0x97121230126f6bd0!2sCBD!5e1!3m2!1sen!2ske!4v1761358900462!5m2!1sen!2ske',
             'address' => '123 Audio Street Nairobi, Dandora Phase II, Kenya',
         ]);
