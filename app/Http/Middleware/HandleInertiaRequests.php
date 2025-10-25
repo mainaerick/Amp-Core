@@ -36,8 +36,13 @@ class HandleInertiaRequests extends Middleware
             'app' => [
                 'name' => Setting::get('storeName', config('app.name')),
                 'logo' => Setting::get('site_logo'),
-                'contact_email' => Setting::get('contact_email'),
-                'store_currency' => Setting::get('store_currency', 'USD'),
+                'contact' => [
+                    'email' => Setting::get('email'),
+                    'phone' => Setting::get('phone'),
+                    'address' => Setting::get('address'),
+                ],
+                'store_currency' => Setting::get('currency', 'USD'),
+                'mapEmbed'=> Setting::get('mapEmbed'),
             ],
             'auth' => [
                 'user' => $request->user(),

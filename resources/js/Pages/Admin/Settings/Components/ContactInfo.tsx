@@ -1,176 +1,143 @@
-import React from 'react';
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle,
-} from '@/components/ui/card';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Button } from '@/components/ui/button';
-import { Loader2, Save } from 'lucide-react';
+import React from "react";
+import { Form, Input, Row, Col, Button } from "antd";
+import { SaveOutlined } from "@ant-design/icons";
 import { TabsContent } from '@/components/ui/tabs';
 
-interface Props {
-    formData: any;
-    handleChange: any;
-    saveSettings: any;
-    isLoading: any;
-    errors: any;
+interface ContactInfoProps {
+    data: any;
+    setData: (key: string, value: any) => void;
+    onFinish: (values: any) => void;
+    isLoading: boolean;
 }
 
-function ContactInfo({
-                         formData,
-                         handleChange,
-                         saveSettings,
-                         isLoading,
-                         errors,
-                     }: Props) {
+export default function ContactInfo({
+                                        data,
+                                        setData,
+                                        onFinish,
+                                        isLoading,
+                                    }: ContactInfoProps) {
     return (
         <TabsContent value="contact">
-            <Card>
-                <CardHeader>
-                    <CardTitle>Contact Information</CardTitle>
-                    <CardDescription>
-                        Manage your store's contact details that appear on the website.
-                    </CardDescription>
-                </CardHeader>
-
-                <CardContent className="space-y-4">
-                    {/* Company Name */}
-                    <div className="space-y-2">
-                        <Label htmlFor="company-name">Company Name</Label>
-                        <Input
-                            id="company-name"
-                            value={formData?.contact.companyName}
-                            onChange={(e) =>
-                                handleChange('contact', 'companyName', e.target.value)
-                            }
-                        />
-                        {errors?.['contact.companyName'] && (
-                            <p className="text-sm text-red-500">
-                                {errors['contact.companyName']}
-                            </p>
-                        )}
-                    </div>
-
-                    {/* Address */}
-                    <div className="space-y-2">
-                        <Label htmlFor="address">Address</Label>
-                        <Textarea
-                            id="address"
-                            value={formData?.contact.address}
-                            onChange={(e) =>
-                                handleChange('contact', 'address', e.target.value)
-                            }
-                            className="min-h-[100px]"
-                        />
-                        {errors?.['contact.address'] && (
-                            <p className="text-sm text-red-500">
-                                {errors['contact.address']}
-                            </p>
-                        )}
-                    </div>
-
-                    {/* Phone + WhatsApp */}
-                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                        <div className="space-y-2">
-                            <Label htmlFor="phone">Phone Number</Label>
-                            <Input
-                                id="phone"
-                                value={formData?.contact.phone}
-                                onChange={(e) =>
-                                    handleChange('contact', 'phone', e.target.value)
-                                }
-                            />
-                            {errors?.['contact.phone'] && (
-                                <p className="text-sm text-red-500">
-                                    {errors['contact.phone']}
-                                </p>
-                            )}
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label htmlFor="whatsapp">WhatsApp Number</Label>
-                            <Input
-                                id="whatsapp"
-                                value={formData?.contact.whatsapp}
-                                onChange={(e) =>
-                                    handleChange('contact', 'whatsapp', e.target.value)
-                                }
-                            />
-                            {errors?.['contact.whatsapp'] && (
-                                <p className="text-sm text-red-500">
-                                    {errors['contact.whatsapp']}
-                                </p>
-                            )}
-                        </div>
-                    </div>
-
-                    {/* Email */}
-                    <div className="space-y-2">
-                        <Label htmlFor="email">Email Address</Label>
-                        <Input
-                            id="email"
-                            type="email"
-                            value={formData?.contact.email}
-                            onChange={(e) =>
-                                handleChange('contact', 'email', e.target.value)
-                            }
-                        />
-                        {errors?.['contact.email'] && (
-                            <p className="text-sm text-red-500">{errors['contact.email']}</p>
-                        )}
-                    </div>
-
-                    {/* Map Embed */}
-                    <div className="space-y-2">
-                        <Label htmlFor="map-embed">Google Maps Embed Code</Label>
-                        <Textarea
-                            id="map-embed"
-                            value={formData?.contact.mapEmbed}
-                            onChange={(e) =>
-                                handleChange('contact', 'mapEmbed', e.target.value)
-                            }
-                            placeholder="Paste your Google Maps embed code here"
-                            className="min-h-[100px]"
-                        />
-                        <p className="text-sm text-muted-foreground">
-                            This will be used to display your location on the contact page.
-                        </p>
-                    </div>
-                </CardContent>
-
-                <CardFooter className="flex justify-between">
-                    <Button
-                        variant="outline"
-                        onClick={() => {
-                            // you need to define setShowConfirmation in this component or pass it as a prop
-                            // currently it's missing in your Props
-                        }}
+        <Form
+            layout="vertical"
+            initialValues={data.contact}
+            onFinish={(values) => onFinish({ contact: values })}
+        >
+            <Row gutter={16}>
+                <Col xs={24} md={12}>
+                    <Form.Item
+                        name="companyName"
+                        label="Company Name"
+                        rules={[{ required: true, message: "Please enter company name" }]}
                     >
-                        Reset to Defaults
-                    </Button>
-                    <Button onClick={() => saveSettings('contact')} disabled={isLoading}>
-                        {isLoading ? (
-                            <>
-                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                Saving...
-                            </>
-                        ) : (
-                            <>
-                                <Save className="mr-2 h-4 w-4" />
-                                Save Changes
-                            </>
-                        )}
-                    </Button>
-                </CardFooter>
-            </Card>
-        </TabsContent>
+                        <Input
+                            value={data.contact.companyName}
+                            onChange={(e) =>
+                                setData("contact", {
+                                    ...data.contact,
+                                    companyName: e.target.value,
+                                })
+                            }
+                            placeholder="Soundwave Audio Ltd."
+                        />
+                    </Form.Item>
+                </Col>
+
+                <Col xs={24} md={12}>
+                    <Form.Item
+                        name="phone"
+                        label="Phone"
+                        rules={[{ required: true, message: "Please enter phone number" }]}
+                    >
+                        <Input
+                            value={data.contact.phone}
+                            onChange={(e) =>
+                                setData("contact", {
+                                    ...data.contact,
+                                    phone: e.target.value,
+                                })
+                            }
+                            placeholder="+1234567890"
+                        />
+                    </Form.Item>
+                </Col>
+
+                <Col xs={24} md={12}>
+                    <Form.Item name="whatsapp" label="WhatsApp">
+                        <Input
+                            value={data.contact.whatsapp}
+                            onChange={(e) =>
+                                setData("contact", {
+                                    ...data.contact,
+                                    whatsapp: e.target.value,
+                                })
+                            }
+                            placeholder="+1234567890"
+                        />
+                    </Form.Item>
+                </Col>
+
+                <Col xs={24} md={12}>
+                    <Form.Item
+                        name="email"
+                        label="Email"
+                        rules={[{ required: true, message: "Please enter email address" }]}
+                    >
+                        <Input
+                            type="email"
+                            value={data.contact.email}
+                            onChange={(e) =>
+                                setData("contact", {
+                                    ...data.contact,
+                                    email: e.target.value,
+                                })
+                            }
+                            placeholder="sales@soundwaveaudio.com"
+                        />
+                    </Form.Item>
+                </Col>
+
+                <Col xs={24}>
+                    <Form.Item name="address" label="Address">
+                        <Input
+                            value={data.contact.address}
+                            onChange={(e) =>
+                                setData("contact", {
+                                    ...data.contact,
+                                    address: e.target.value,
+                                })
+                            }
+                            placeholder="123 Audio Street, Music City"
+                        />
+                    </Form.Item>
+                </Col>
+
+                <Col xs={24}>
+                    <Form.Item name="mapEmbed" label="Map Embed (optional)">
+                        <Input
+                            value={data.contact.mapEmbed}
+                            onChange={(e) =>
+                                setData("contact", {
+                                    ...data.contact,
+                                    mapEmbed: e.target.value,
+                                })
+                            }
+                            placeholder="https://maps.google.com/embed..."
+                        />
+                    </Form.Item>
+                </Col>
+            </Row>
+
+            <Form.Item>
+                <Button
+                    type="primary"
+                    htmlType="submit"
+                    loading={isLoading}
+                    icon={<SaveOutlined />}
+                >
+                    Save Contact Info
+                </Button>
+            </Form.Item>
+        </Form></TabsContent>
     );
 }
-
-export default ContactInfo;

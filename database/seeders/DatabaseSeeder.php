@@ -46,15 +46,17 @@ class DatabaseSeeder extends Seeder
 //        Product::truncate();
         Product::factory()->count(20)->hasImages(ProductImage::factory()->count(3))->create();
         Setting::setSection('general', [
-            'storeName' => 'SoundWave Audio',
-            'storeUrl' => 'https://soundwaveaudio.com',
-            'currency' => 'USD',
+            'storeName' => 'AMPCORE',
+            'storeUrl' => 'https://ampcore.fluxnerve.com',
+            'currency' => 'KSH',
         ]);
 
         Setting::setSection('contact', [
-            'email' => 'support@soundwaveaudio.com',
-            'phone' => '+1 (212) 555-7890',
-            'address' => '123 Main St, New York, NY',
+            'email' => 'support@ampcore.com',
+            'phone' => '+254740212762',
+            'whatsapp' => '+254740212762',
+            'mapEmbed'=>'https://maps.app.goo.gl/VGYsA15SyCbzYs4s7',
+            'address' => '123 Audio Street Nairobi, Dandora Phase II, Kenya',
         ]);
 
     }
