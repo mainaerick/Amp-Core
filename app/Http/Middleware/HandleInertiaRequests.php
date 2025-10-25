@@ -35,6 +35,7 @@ class HandleInertiaRequests extends Middleware
             ...parent::share($request),
             'app' => [
                 'name' => Setting::get('storeName', config('app.name')),
+                'description' => Setting::get('storeDescription', 'Your premier destination for high-quality audio equipment since 2005.'),
                 'logo' => Setting::get('site_logo'),
                 'contact' => [
                     'email' => Setting::get('email'),

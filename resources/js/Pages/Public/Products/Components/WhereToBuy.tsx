@@ -9,7 +9,7 @@ interface WhereToBuyProps {
 }
 
 export default function WhereToBuy({ productName }: WhereToBuyProps) {
-    const { name, phone, email, address, mapEmbed, productMessage } = useContactInfo();
+    const { name,description, phone, email, address, mapEmbed, productMessage } = useContactInfo();
     const messageLinks = productMessage(productName);
 
     return (
