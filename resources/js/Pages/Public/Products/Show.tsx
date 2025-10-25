@@ -68,7 +68,11 @@ export default function ProductPage({product,
 
                 <ProductSpecs specs={product.specs || []} />
 
-                {product.demo_video && <ProductDemo videoUrl={product.demo_video} />}
+                {product.demo_video && <ProductDemo
+                    videoUrl={product.demo_video}
+                    title="Feature Walkthrough"
+                    headingLevel="h3"
+                />}
 
                 {relatedProducts.length > 0 && (
                     <RelatedProducts products={relatedProducts} />
