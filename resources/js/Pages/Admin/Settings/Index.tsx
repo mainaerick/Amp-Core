@@ -4,7 +4,6 @@ import { SaveOutlined } from '@ant-design/icons';
 import { router, useForm } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import StoreInfo from '../../../../../bootstrap/ssr/assets/StoreInfo-97nRdpAL';
 import ContactInfo from '@/Pages/Admin/Settings/Components/ContactInfo';
 
 interface GeneralSettings {
