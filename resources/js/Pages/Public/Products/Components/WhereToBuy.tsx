@@ -9,7 +9,7 @@ interface WhereToBuyProps {
 }
 
 export default function WhereToBuy({ productName }: WhereToBuyProps) {
-    const { name,description, phone, email, address, mapEmbed, productMessage } = useContactInfo();
+    const { name, description, phone, email, address, mapEmbed, productMessage } = useContactInfo();
     const messageLinks = productMessage(productName);
 
     return (
@@ -55,8 +55,8 @@ export default function WhereToBuy({ productName }: WhereToBuyProps) {
                 {mapEmbed && (
                     <iframe
                         src={mapEmbed}
-                        style={{border:0}}
-                        width="100%" height="450" allowFullScreen="" loading="lazy"
+                        style={{ border: 0 }}
+                        width="100%" height="450" allowFullScreen loading="lazy"
                         referrerPolicy="no-referrer-when-downgrade"></iframe>
                 )}
             </CardContent>
