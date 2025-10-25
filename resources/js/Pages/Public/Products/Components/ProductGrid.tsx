@@ -31,8 +31,6 @@ export default function ProductGrid({ products, categorySlug, filters = {} }: Pr
         )
     }
 
-    console.log(products)
-
 
     return (
         <div className="flex flex-col gap-8">

@@ -57,8 +57,8 @@ export default function FilterSidebar({ category, filters, availableBrands }: Pr
                     onValueChange={setPriceRange}
                 />
                 <div className="flex justify-between text-sm mt-2">
-                    <span>${priceRange[0]}</span>
-                    <span>${priceRange[1]}</span>
+                    <span>KSH{priceRange[0]}</span>
+                    <span>KSH{priceRange[1]}</span>
                 </div>
             </div>
 
